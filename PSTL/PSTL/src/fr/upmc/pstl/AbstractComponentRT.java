@@ -141,11 +141,12 @@ public abstract class AbstractComponentRT extends AbstractComponent
 			long longer_time_offered_methods = 0;
 			long smallest_time_limite_offered = ((CyclePeriod) r.getClass().getAnnotation(CyclePeriod.class)).period();
 			long latest_start_time_offered = 0;
+			long semantique_size = 0;
 			List<Method> task_semantique = new ArrayList<>();
-			Map<String , AccessType> allAccessedVar = new HashMap<>();
 			for (Method t : tasks) {
 				if (AbstractComponentRT.isSemantique (t)){
 					task_semantique.add(t);
+					semantique_size += ((TaskAnnotation)t.getAnnotation(TaskAnnotation.class)).wcet();
 				}else {
 					long et = ((TaskAnnotation) t.getAnnotation(TaskAnnotation.class)).wcet();
 					long timeLimit = ((TaskAnnotation) t.getAnnotation(TaskAnnotation.class)).timeLimit();
@@ -159,19 +160,16 @@ public abstract class AbstractComponentRT extends AbstractComponent
 					if (et > longer_time_offered_methods) {
 						longer_time_offered_methods = et;
 					}
-					String [] vars = ((AccessedVars) t.getAnnotation(AccessedVars.class)).vars();
-					AccessType [] type = ((AccessedVars) t.getAnnotation(AccessedVars.class)).accessType();
-					for (int i = 0 ; i < vars.length ; i ++) {
-						if (allAccessedVar.containsKey(vars[i])) {
-							if (!allAccessedVar.get(vars[i]).equals(type[i])) {
-								allAccessedVar.put(vars[i], AccessType.BOTH);
-							}
-						}else {
-							allAccessedVar.put(vars[i] , type[i]);
-						}
-					}
 				}
 			}
+			
+			List<Method> ect_list = createExecuteCallTask( ((CyclePeriod) r.getClass().getAnnotation(CyclePeriod.class)).period() ,
+															semantique_size,
+															longer_time_offered_methods,
+															smallest_time_limite_offered,
+															latest_start_time_offered);
+			
+			task_semantique.addAll(ect_list);
 			
 			
 			// cas triviaux d'exception
@@ -205,38 +203,11 @@ public abstract class AbstractComponentRT extends AbstractComponent
 			
 			if ((totalTime+longer_time_offered_methods) > r.getClass().getAnnotation(CyclePeriod.class).period())
 				throw new TimeException("period exceeded");
-			
-			long remined_time = r.getClass().getAnnotation(CyclePeriod.class).period() - totalTime;
-			int nb_ect = 0;
-			if(longer_time_offered_methods!=0)
-				nb_ect =(int) (remined_time / (longer_time_offered_methods));
-			System.out.println("nb ect "+nb_ect);
-			
-			String [] accessedVars = new String [allAccessedVar.size()];
-			AccessType [] accessedVarType = new AccessType [allAccessedVar.size()];
-			int index = 0;
-			for (Map.Entry<String , AccessType> e : allAccessedVar.entrySet()) {
-				accessedVars[index] = e.getKey();
-				accessedVarType[index ++] = e.getValue();
-			}
-			
-			for( int i = 0 ; i < nb_ect ; i ++) {
-				Method m = r.getClass().getMethod("executeCallTask");
-				System.out.println(smallest_time_limite_offered+" ----");
-				alterAnnotationValue(m , TaskAnnotation.class , AccessedVars.class , accessedVars , accessedVarType,
-										smallest_time_limite_offered, latest_start_time_offered , longer_time_offered_methods  );
-				tasks.add(m);
-			}
-			
-			
-			
-		
+					
 			for (String key : variablesAccessType.keySet()) {
 				if ( variablesAccessType.get(key) == AccessType.READ )
 					throw new PrecedanceException("trying to read unwritten variable "+key);
 			}
-			
-			
 			
 			// test circularité
 			for ( String s1 : variables.keySet()) {
@@ -280,6 +251,82 @@ public abstract class AbstractComponentRT extends AbstractComponent
 			}
 			return ord;
 	}
+	
+	
+	private List<Method> createExecuteCallTask(long periode , 
+												long semantique_time , 
+												long largest_wcet,
+												long smallest_timeLimit,
+												long largest_startTime) {
+		List<Method> offered = allOffredMethod();
+		
+		if (offered.size() == 0) {
+			return null;
+		}
+		
+		Map<String , AccessType> variables = new HashMap<String, AccessType>();
+		
+	
+		String [] vars;
+		AccessType [] types;
+		for (Method m : offered) {
+			vars = ((AccessedVars) m.getAnnotation(AccessedVars.class)).vars();
+			types = ((AccessedVars) m.getAnnotation(AccessedVars.class)).accessType();
+			for (int i = 0 ; i < vars.length ; i ++) {
+				if (!variables.containsKey(vars[i])) {
+					variables.put(vars[i], types[i]);
+				}else {
+					if (!variables.get(vars[i]).equals(types[i])) 
+						variables.put(vars[i], AccessType.BOTH);
+				}
+			
+			}
+		}
+		
+		String [] vars_accessed = new String[variables.size()];
+		AccessType [] typeAccess = new AccessType[variables.size()];
+		int j = 0;
+		for (Map.Entry<String, AccessType> e : variables.entrySet()) {
+			vars_accessed[j] = e.getKey();
+			typeAccess[j++] = e.getValue();
+		}
+		
+		List<Method> ect_list = new ArrayList<>();
+		int nb_ect = (int) ((periode - semantique_time)/largest_wcet);
+		
+		try {
+			for( int i = 0 ; i < nb_ect ; i ++) {
+				Method m = AbstractComponentRT.class.getMethod("executeCallTask");
+				alterAnnotationValue(m , TaskAnnotation.class , AccessedVars.class , vars_accessed , typeAccess,
+										smallest_timeLimit, largest_startTime, largest_wcet  );
+				ect_list.add(m);
+			}
+		}catch( Exception e ) {
+			e.printStackTrace();
+			return null;
+		}
+		
+		return ect_list;
+	}
+	
+	
+	
+	/**
+	 * used in createExecuteCallTask to get the value of wcet timeLimit ...
+	 * @return all offered method by the component
+	 */
+	private List<Method> allOffredMethod () {
+		List<Method> offered = new ArrayList<Method>();
+		Class[] offred = ((OfferedInterfaces)this.getClass().getAnnotation(OfferedInterfaces.class)).offered();
+		for (Class c : offred) {
+			Method [] methods = c.getDeclaredMethods();
+			for (int i = 0 ; i < methods.length ; i ++ ) {
+				offered.add(methods[i]);
+			}
+		}
+		return offered;
+	}
+	
 	
 	private void alterAnnotationValue (	Method m , 
 										Class <? extends Annotation> a, 
