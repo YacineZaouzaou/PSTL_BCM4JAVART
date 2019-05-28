@@ -1,0 +1,10 @@
+package fr.upmc.pstl.exemples.basic.interfaces;
+
+import java.util.concurrent.CompletableFuture;
+
+import fr.upmc.components.interfaces.OfferedI;
+
+public interface ProviderI 
+extends OfferedI{
+	public void Task2(CompletableFuture<Object> cf);
+}

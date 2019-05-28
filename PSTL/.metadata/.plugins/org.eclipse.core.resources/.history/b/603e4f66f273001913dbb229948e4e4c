@@ -1,0 +1,114 @@
+package fr.upmc.pstl.exemples.basic;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import fr.upmc.components.cvm.AbstractDistributedCVM;
+import fr.upmc.components.examples.basic_cs.components.URIConsumer;
+import fr.upmc.components.examples.basic_cs.components.URIProvider;
+import fr.upmc.pstl.AbstractTask;
+import fr.upmc.pstl.Tasks.Incremente;
+import fr.upmc.pstl.Tasks.Provide;
+import fr.upmc.pstl.exemples.basic.components.Consumer;
+import fr.upmc.pstl.exemples.basic.components.Provider;
+
+public class DistributedCVM 
+extends		AbstractDistributedCVM
+{
+	protected static final String	PROVIDER_COMPONENT_URI = "my-provider" ;
+	protected static final String	CONSUMER_COMPONENT_URI = "my-consumer" ;
+
+	// URI of the CVM instances as defined in the config.xml file
+	protected static String			PROVIDER_JVM_URI = "provider" ;
+	protected static String			CONSUMER_JVM_URI = "consumer" ;
+
+	protected static String			URIConsumerOutboundPortURI = "oport" ;
+	protected static String			URIProviderInboundPortURI = "iport" ;
+
+	protected Provider	uriProvider ;
+	protected Consumer	uriConsumer ;
+
+	public				DistributedCVM(String[] args)
+	throws Exception
+	{
+		super(args);
+	}
+	
+	
+	protected ArrayList<AbstractTask> tasksP = new ArrayList<AbstractTask>();
+	protected ArrayList<AbstractTask> tasksC = new ArrayList<AbstractTask>();
+	protected Map<String,Object> varsP = new HashMap<String,Object>();
+	protected Map<String,Object> varsC = new HashMap<String,Object>();
+	protected AbstractTask t1 ;//= new Incremente(provider,null,null); // Incremente la variable
+	protected AbstractTask t2 ;//= new Provide(provider,null,null); // get la variable
+	protected AbstractTask t3;// = new Get(consumer,null,null); // appel 
+	protected int var1,var2;//,var3,var4;
+	
+	
+	@Override
+	public void			initialise() throws Exception
+	{
+		super.initialise() ;
+		
+	}
+	
+	
+	@Override
+	public void			instantiateAndPublish() throws Exception
+	{
+		if (thisJVMURI.equals(PROVIDER_JVM_URI)) {
+
+			// create the provider component
+			this.uriProvider =
+				new Provider(PROVIDER_COMPONENT_URI,
+								URIProviderInboundPortURI,
+								varsP, tasksP) ;
+			
+			t1 = new Incremente(provider,null,null); // Incremente la variable
+			t2 = new Provide(provider,null,null); // get la variable
+			// make it trace its operations; comment and uncomment the line to see
+			// the difference
+			// uriProvider.toggleTracing() ;
+			uriProvider.toggleLogging() ;
+			// add it to the deployed components
+			this.addDeployedComponent(uriProvider) ;
+			assert	this.uriConsumer == null && this.uriProvider != null ;
+
+		} else if (thisJVMURI.equals(CONSUMER_JVM_URI)) {
+
+			// create the consumer component
+			this.uriConsumer = new Consumer(CONSUMER_COMPONENT_URI,
+											   URIConsumerOutboundPortURI,
+											   varsC, tasksC) ;
+			// make it trace its operations; comment and uncomment the line to see
+			// the difference
+			// uriConsumer.toggleTracing() ;
+			uriConsumer.toggleLogging() ;
+			// add it to the deployed components
+			this.addDeployedComponent(uriConsumer) ;
+			assert	this.uriConsumer != null && this.uriProvider == null ;
+
+		} else {
+
+			System.out.println("Unknown JVM URI... " + thisJVMURI) ;
+
+		}
+
+		super.instantiateAndPublish();
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+}

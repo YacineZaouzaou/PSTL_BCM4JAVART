@@ -1,0 +1,24 @@
+package fr.upmc.pstl.Tasks;
+import java.util.concurrent.CompletableFuture;
+import fr.upmc.pstl.AbstractComponentRT;
+import fr.upmc.pstl.AbstractTask;
+import fr.upmc.pstl.annotations.AccessType;
+import fr.upmc.pstl.annotations.AccessedVars;
+import fr.upmc.pstl.annotations.TaskAnnotation;
+import fr.upmc.pstl.exemples.basic.components.Consumer;
+
+@AccessedVars(accessType = { AccessType.WRITE }, vars = { "var2" })
+@TaskAnnotation(timeLimit = 9, wcet = 3)
+public class Get extends AbstractTask {
+
+	public Get(AbstractComponentRT compRT, Object[] params, CompletableFuture<Object> cf) {
+		super(compRT, params, cf);
+	}
+
+	@Override
+	public void execute() {
+		CompletableFuture<Integer> cf = new CompletableFuture<>();
+		((Consumer) this.compRT).getUriGetterPort();
+	}
+
+}

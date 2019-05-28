@@ -1,0 +1,28 @@
+package fr.upmc.pstl.exemples.basic;
+
+import fr.upmc.components.cvm.AbstractDistributedCVM;
+import fr.upmc.components.examples.basic_cs.components.URIConsumer;
+import fr.upmc.components.examples.basic_cs.components.URIProvider;
+
+public class DistributedCVM 
+extends		AbstractDistributedCVM
+{
+	protected static final String	PROVIDER_COMPONENT_URI = "my-URI-provider" ;
+	protected static final String	CONSUMER_COMPONENT_URI = "my-URI-consumer" ;
+
+	// URI of the CVM instances as defined in the config.xml file
+	protected static String			PROVIDER_JVM_URI = "provider" ;
+	protected static String			CONSUMER_JVM_URI = "consumer" ;
+
+	protected static String			URIConsumerOutboundPortURI = "oport" ;
+	protected static String			URIProviderInboundPortURI = "iport" ;
+
+	protected URIProvider	uriProvider ;
+	protected URIConsumer	uriConsumer ;
+
+	public				DistributedCVM(String[] args)
+	throws Exception
+	{
+		super(args);
+	}
+}

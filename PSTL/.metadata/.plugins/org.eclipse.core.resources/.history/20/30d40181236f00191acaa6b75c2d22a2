@@ -1,0 +1,154 @@
+package fr.upmc.pstl;
+
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.processing.SupportedSourceVersion;
+
+import fr.upmc.components.AbstractComponent;
+import fr.upmc.pstl.annotations.AccessType;
+import fr.upmc.pstl.annotations.AccessedVars;
+import fr.upmc.pstl.annotations.CyclePeriod;
+import fr.upmc.pstl.annotations.TaskAnnotation;
+import fr.upmc.pstl.exceptions.CircularityException;
+import fr.upmc.pstl.exceptions.PrecedanceException;
+import fr.upmc.pstl.exceptions.TimeException;
+
+@CyclePeriod(period = 10)
+public abstract class AbstractComponentRT extends AbstractComponent
+{
+	List<Object> vars;
+	List<AbstractTask> tasks;
+	List<AbstractTask> to_execute; 
+	ExecuteCallTask ect;
+	
+	public AbstractComponentRT(List<Object> vars, List<AbstractTask> tasks) {
+		this.vars = vars;
+		this.tasks = tasks;
+		this.to_execute = new ArrayList<AbstractTask>();
+	}
+	
+	protected ITask getLastTask() {
+		ITask curr = this.to_execute.get(0);
+		this.to_execute.remove(0);
+		return curr;
+	}
+
+	protected final void scheduler (AbstractComponentRT r) {
+		try {
+			// cas triviaux d'exception
+			long totalTime = 0;
+			Map<String, Map<ITask, AccessType>> variables = new HashMap<>();
+			Map<String, AccessType> variablesAccessType = new HashMap<>();
+			for (ITask task : r.tasks) {
+				TaskAnnotation annotation = (TaskAnnotation) task.getClass().getAnnotation(TaskAnnotation.class); 
+				AccessedVars annotationAccess = (AccessedVars) task.getClass().getAnnotation(AccessedVars.class);
+				for (int i = 0 ; i < annotationAccess.vars().length ; i ++) {
+					if (!variables.containsKey(annotationAccess.vars()[i]))
+						variables.put(annotationAccess.vars()[i], new HashMap<>());
+					if (!variablesAccessType.containsKey(annotationAccess.vars()[i]))
+						variablesAccessType.put(annotationAccess.vars()[i], annotationAccess.accessType()[i]);
+					
+					variables.get(annotationAccess.vars()[i]).put(task, annotationAccess.accessType()[i]);	
+					
+					if (variablesAccessType.get(annotationAccess.vars()[i]) != annotationAccess.accessType()[i])
+						variablesAccessType.put(annotationAccess.vars()[i], AccessType.BOTH);
+				}
+				totalTime += annotation.wcet();
+				if (annotation.timeLimit() < annotation.wcet())
+					throw new TimeException("impossible de satisfy "+TaskAnnotation.class+" deadLine");	
+			}
+			
+			if (totalTime > r.getClass().getAnnotation(CyclePeriod.class).period())
+				throw new TimeException("period exceeded");
+		
+			for (String key : variablesAccessType.keySet()) {
+				if ( variablesAccessType.get(key) == AccessType.READ )
+					throw new PrecedanceException("trying to read unwritten variable "+key);
+			}
+			
+			// test circularité
+			for ( String s1 : variables.keySet()) {
+				for (String s2 : variables.keySet()) {
+					if ( ! s2.equals(s1)) {
+						for (ITask t1 : variables.get(s1).keySet()) {
+							for (ITask t2 : variables.get(s2).keySet()) {
+								if ((! t1.equals(t2)) && variables.get(s2).keySet().contains(t1) && variables.get(s1).keySet().contains(t2)) {
+									if (variables.get(s1).get(t1) == AccessType.READ && variables.get(s2).get(t1) == AccessType.WRITE
+											&& variables.get(s1).get(t2) == AccessType.WRITE && variables.get(s2).get(t2) == AccessType.READ
+											)
+										throw new CircularityException("the task "+t1+" read "+s2+" and write "+s1+" and the task "+t2+" does the symestrique operation");
+									
+									if (variables.get(s1).get(t1) == AccessType.WRITE && variables.get(s2).get(t1) == AccessType.READ
+											&& variables.get(s1).get(t2) == AccessType.READ && variables.get(s2).get(t2) == AccessType.WRITE
+											)
+										throw new CircularityException("the task "+t2+" read "+s1+" and write "+s2+" and the task "+t1+" does the symestrique operation");	
+								}
+							}
+						}
+					}
+				}
+			}
+			//calcul de l'ordonnanceur
+			
+			// placer dans la liste des tasks un ordre (une initilisation) ex : (le temps de terminaison croissant)
+			// utiliser peut être une relation d'ordre partiel -tri topologique-
+			r.tasks.sort(new TaskComparator());
+			List<AbstractTask> ord = this.sched(r.tasks , new ArrayList<AbstractTask> ());
+			for(AbstractTask t : ord) {
+				System.out.println(t.getClass());
+			}
+			
+		} catch (TimeException | PrecedanceException | CircularityException | SchedulingException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * reorganiser selon les deadline les plus proche
+	 */
+	protected final List<AbstractTask> reorderList (List<AbstractTask> list){
+		
+		return null;
+	}
+	
+	protected final List<AbstractTask> sched (List<AbstractTask> l, List<AbstractTask> ord) throws SchedulingException{
+		if (l.size() == 0) {
+			return ord;
+		}
+		System.out.println("l :"+l.size());
+		System.out.println("ord :"+ord.size());
+		List<AbstractTask> l2 = (List<AbstractTask>) ((ArrayList<AbstractTask>) l).clone();
+		for (AbstractTask i : l) {
+			System.out.println(i.getClass());
+			ord.add(i);
+			l2.remove(i);
+			if (AbstractComponentRT.checkPossibility(ord)) {
+				
+				ord = this.sched(l2, ord);
+				return ord;
+			}
+			l2.add(i);
+			ord.remove(i);
+		}
+		return ord;
+	}
+	
+	
+	// il y a peut être une bétise ici 
+	// il faut comparer chaque élèment avec tout ceux qui le suivent
+	protected static boolean  checkPossibility (List<AbstractTask> list) {
+		TaskComparator tc = new TaskComparator();
+		for (int i = 0 ;i < list.size()-1 ; i ++) {
+//			System.out.println(i);
+			if (tc.compare(list.get(i), list.get(i+1)) <=0)
+				continue;
+			return false;
+		}
+		return true;
+	}
+	
+}

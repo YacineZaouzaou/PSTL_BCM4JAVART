@@ -1,0 +1,23 @@
+package fr.upmc.pstl.Tasks;
+import java.util.concurrent.CompletableFuture;
+
+import fr.upmc.pstl.AbstractComponentRT;
+import fr.upmc.pstl.AbstractTask;
+import fr.upmc.pstl.annotations.AccessType;
+import fr.upmc.pstl.annotations.AccessedVars;
+import fr.upmc.pstl.annotations.TaskAnnotation;
+import fr.upmc.pstl.exemples.basic.components.Provider;
+
+@AccessedVars(accessType = { AccessType.WRITE }, vars = { "var1"})
+@TaskAnnotation(timeLimit = 9, wcet = 3)
+public class Task1 extends AbstractTask{
+
+	public Task1(Provider provider, Object[] params, CompletableFuture<Object> cf) {
+		super(provider, params, cf);
+	}
+
+	@Override
+	public void execute() {
+		super.compRT.getVars().get("var1");
+	}
+}

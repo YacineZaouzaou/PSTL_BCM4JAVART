@@ -1,0 +1,89 @@
+package fr.upmc.pstl.exemples.basic;
+
+import fr.upmc.components.cvm.AbstractDistributedCVM;
+import fr.upmc.components.examples.basic_cs.components.URIConsumer;
+import fr.upmc.components.examples.basic_cs.components.URIProvider;
+
+public class DistributedCVM 
+extends		AbstractDistributedCVM
+{
+	protected static final String	PROVIDER_COMPONENT_URI = "my-provider" ;
+	protected static final String	CONSUMER_COMPONENT_URI = "my-consumer" ;
+
+	// URI of the CVM instances as defined in the config.xml file
+	protected static String			PROVIDER_JVM_URI = "provider" ;
+	protected static String			CONSUMER_JVM_URI = "consumer" ;
+
+	protected static String			URIConsumerOutboundPortURI = "oport" ;
+	protected static String			URIProviderInboundPortURI = "iport" ;
+
+	protected URIProvider	uriProvider ;
+	protected URIConsumer	uriConsumer ;
+
+	public				DistributedCVM(String[] args)
+	throws Exception
+	{
+		super(args);
+	}
+	
+	@Override
+	public void			initialise() throws Exception
+	{
+		super.initialise() ;
+		
+	}
+	
+	
+	@Override
+	public void			instantiateAndPublish() throws Exception
+	{
+		if (thisJVMURI.equals(PROVIDER_JVM_URI)) {
+
+			// create the provider component
+			this.uriProvider =
+				new Provider(PROVIDER_COMPONENT_URI,
+								URIProviderInboundPortURI) ;
+			// make it trace its operations; comment and uncomment the line to see
+			// the difference
+			// uriProvider.toggleTracing() ;
+			uriProvider.toggleLogging() ;
+			// add it to the deployed components
+			this.addDeployedComponent(uriProvider) ;
+			assert	this.uriConsumer == null && this.uriProvider != null ;
+
+		} else if (thisJVMURI.equals(CONSUMER_JVM_URI)) {
+
+			// create the consumer component
+			this.uriConsumer = new Consumer(CONSUMER_COMPONENT_URI,
+											   URIConsumerOutboundPortURI) ;
+			// make it trace its operations; comment and uncomment the line to see
+			// the difference
+			// uriConsumer.toggleTracing() ;
+			uriConsumer.toggleLogging() ;
+			// add it to the deployed components
+			this.addDeployedComponent(uriConsumer) ;
+			assert	this.uriConsumer != null && this.uriProvider == null ;
+
+		} else {
+
+			System.out.println("Unknown JVM URI... " + thisJVMURI) ;
+
+		}
+
+		super.instantiateAndPublish();
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+}

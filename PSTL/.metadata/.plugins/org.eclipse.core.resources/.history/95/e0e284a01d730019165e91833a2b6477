@@ -1,0 +1,24 @@
+package fr.upmc.pstl.exemples.basic.ports;
+
+import java.util.concurrent.CompletableFuture;
+
+import fr.upmc.components.ComponentI;
+import fr.upmc.components.ports.AbstractOutboundPort;
+import fr.upmc.pstl.exemples.basic.interfaces.ConsumerI;
+
+public class ConsumerOutBoundPort 
+extends AbstractOutboundPort 
+implements ConsumerI {
+
+	public ConsumerOutBoundPort(Class<?> implementedInterface, ComponentI owner) throws Exception {
+		super(implementedInterface, owner);
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public void callTask2(Object[] params, CompletableFuture<Object> cf) {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

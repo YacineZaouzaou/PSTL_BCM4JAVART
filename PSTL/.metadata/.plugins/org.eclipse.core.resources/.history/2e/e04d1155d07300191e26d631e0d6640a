@@ -1,0 +1,55 @@
+package fr.upmc.pstl.exemples.basic.components;
+
+import java.util.List;
+import java.util.Map;
+
+import fr.upmc.components.annotations.RequiredInterfaces;
+import fr.upmc.components.examples.basic_cs.ports.URIConsumerOutboundPort;
+import fr.upmc.components.exceptions.ComponentStartException;
+import fr.upmc.components.ports.PortI;
+import fr.upmc.pstl.AbstractComponentRT;
+import fr.upmc.pstl.AbstractTask;
+import fr.upmc.pstl.annotations.CyclePeriod;
+import fr.upmc.pstl.exemples.basic.interfaces.ConsumerI;
+import fr.upmc.pstl.exemples.basic.ports.ConsumerOutBoundPort;
+
+@CyclePeriod(period = 15)
+@RequiredInterfaces(required = {ConsumerI.class})
+public class Consumer 
+extends AbstractComponentRT{
+	
+	protected ConsumerOutBoundPort uriGetterPort;
+
+	public Consumer(
+			String uri, 
+			String consumerPortURI,
+			Map<String,Object> vars, 
+			List<AbstractTask> tasks) throws Exception
+	{
+		super(uri,vars, tasks);
+		this.tasks = super.scheduler(this);
+		
+		this.uriGetterPort = new URIConsumerOutboundPort(consumerPortURI, this);
+		
+		this.addPort(p);
+		
+		p.publishPort();
+	}
+	
+	public void cycle() {
+		for(AbstractTask task : this.tasks) {
+			task.execute();
+		}
+	}
+	
+	
+	public void start() throws ComponentStartException {
+		super.start();
+		new Thread (()->  {
+			while (true) {
+				cycle();
+			}
+		}).start();
+	}
+
+}

@@ -1,0 +1,18 @@
+package fr.upmc.pstl.exemples.basic.components;
+
+import java.util.List;
+
+import fr.upmc.components.annotations.OfferedInterfaces;
+import fr.upmc.pstl.AbstractComponentRT;
+import fr.upmc.pstl.AbstractTask;
+import fr.upmc.pstl.exemples.basic.interfaces.ConsumerI;
+
+@OfferedInterfaces(offered = {ConsumerI.class})
+public class Consumer 
+extends AbstractComponentRT{
+
+	public Consumer(Map<String , Object> vars, List<AbstractTask> tasks) {
+		super(vars, tasks);
+	}
+
+}

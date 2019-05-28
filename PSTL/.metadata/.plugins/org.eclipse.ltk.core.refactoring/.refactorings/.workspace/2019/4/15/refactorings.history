@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Delete resource &apos;BCM4JAVA_RT&apos;" deleteContents="true" description="Delete resource &apos;BCM4JAVA_RT&apos;" element1="/BCM4JAVA_RT" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="1" stamp="1554806899418"/>
+</session>

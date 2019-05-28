@@ -1,0 +1,85 @@
+package fr.upmc.pstl.exemples.basic.components;
+
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+import fr.upmc.components.annotations.OfferedInterfaces;
+import fr.upmc.components.exceptions.ComponentStartException;
+import fr.upmc.pstl.AbstractComponentRT;
+import fr.upmc.pstl.AbstractTask;
+import fr.upmc.pstl.ITask;
+import fr.upmc.pstl.Tasks.Provide;
+import fr.upmc.pstl.annotations.CyclePeriod;
+import fr.upmc.pstl.exemples.basic.interfaces.ProviderI;
+import fr.upmc.pstl.exemples.basic.ports.ProviderInboundPort;
+
+@CyclePeriod(period = 15)
+@OfferedInterfaces(offered = {ProviderI.class})
+public class Provider 
+extends AbstractComponentRT 
+implements ProviderI{
+	
+	
+	protected ProviderInboundPort uriGetterPort;
+
+	public Provider(
+			String uri, 
+			String providerportURI, 
+			Map<String,Object> vars, 
+			List<AbstractTask> tasks) throws Exception
+	{
+		super(uri,vars, tasks);
+		
+		
+		this.uriGetterPort = new ProviderInboundPort(providerportURI, this);
+		
+		this.addPort(this.uriGetterPort);
+		
+		this.uriGetterPort.publishPort();
+	}
+
+	@Override
+	public void provide(Object[] params, CompletableFuture<Object> cf) {
+		ITask task = new Provide(this, params, cf);
+		this.addCall(task);
+	}
+	
+
+	public void cycle()  throws Exception{
+		for(AbstractTask task : this.tasks) {
+			task.execute();
+		}
+	}
+	
+	
+	public void start() throws ComponentStartException {
+		super.start();
+		
+		
+		
+		 private final ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
+		 exec.scheduleAtFixedRate(()->{
+				cycle(); 
+		 }, 0, 1000, TimeUnit.MILLISECONDS);
+		
+		
+		new Thread (()->  {
+			while (true) {
+				try {
+					cycle();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}).start();
+	}
+
+	public void schedul() {
+		this.tasks = super.scheduler(this);
+	}
+}

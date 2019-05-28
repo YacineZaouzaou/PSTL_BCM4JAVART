@@ -1,0 +1,19 @@
+package pobj.expr;
+
+public class Question10 {
+	
+	public static boolean isConstant(Expression e) {
+		try {
+			VisitorEval ve = new VisitorEval();
+			int eval = e.accept(ve);
+			return true;
+			
+		} catch (Exception e2) {
+			return false;
+		}
+	}
+	
+	public static int evalConstantExpression(Expression e) {
+		
+	}
+}

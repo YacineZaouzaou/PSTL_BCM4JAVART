@@ -1,0 +1,21 @@
+package fr.upmc.pstl.exemples.basic;
+
+import java.util.concurrent.CompletableFuture;
+
+import fr.upmc.components.connectors.AbstractConnector;
+import fr.upmc.pstl.exemples.basic.interfaces.ConsumerI;
+
+public class ServiceConnector 
+extends AbstractConnector 
+implements ConsumerI {
+	
+	
+	
+	
+
+	@Override
+	public void callTask2(Object[] params, CompletableFuture<Object> cf) {
+		
+	}
+
+}

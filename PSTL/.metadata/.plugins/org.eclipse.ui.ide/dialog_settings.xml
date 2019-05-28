@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<list key="org.eclipse.ui.internal.wizards.datatransfer.SmartImportRootWizardPage.knownSources">
+		<item value="/home/zineddine/Téléchargements/dynamically-adaptable-components-safe-in-java-master.zip"/>
+		<item value="/home/zineddine/UPMC/2018-2019/DLP/workspace3-4/workspace"/>
+		<item value="/home/zineddine/UPMC/2018-2019/DLP/workspace3/workspace/ILP-UPMC"/>
+		<item value="/home/zineddine/UPMC/2018-2019/DLP/workspace3/workspace"/>
+	</list>
+	<section name="CleanDialogSettings">
+		<item key="DIALOG_WIDTH" value="569"/>
+		<item key="TOGGLE_SELECTED" value="false"/>
+		<item key="DIALOG_HEIGHT" value="415"/>
+		<item key="DIALOG_X_ORIGIN" value="432"/>
+		<item key="DIALOG_Y_ORIGIN" value="122"/>
+	</section>
+	<section name="ExternalProjectImportWizard">
+		<item key="WizardProjectsImportPage.STORE_NESTED_PROJECTS" value="false"/>
+		<item key="WizardProjectsImportPage.STORE_COPY_PROJECT_ID" value="false"/>
+		<item key="WizardProjectsImportPage.STORE_ARCHIVE_SELECTED" value="false"/>
+		<list key="WizardProjectsImportPage.STORE_DIRECTORIES">
+			<item value="/home/zineddine/PSTL/PSTL"/>
+			<item value="/home/zineddine/eclipse-workspace/dynamically-adaptable-components-safe-in-java-master.zip_expanded"/>
+			<item value="/home/zineddine/UPMC/2018-2019/DLP/workspace2/workspace"/>
+		</list>
+		<list key="WizardProjectsImportPage.STORE_ARCHIVES">
+			<item value=""/>
+		</list>
+	</section>
+	<section name="WORKBENCH_SETTINGS">
+		<list key="ENABLED_TRANSFERS">
+		</list>
+	</section>
+	<section name="NewWizardAction">
+	</section>
+	<section name="ChooseWorkspaceDialogSettings">
+		<item key="DIALOG_X_ORIGIN" value="300"/>
+		<item key="DIALOG_Y_ORIGIN" value="159"/>
+	</section>
+</section>

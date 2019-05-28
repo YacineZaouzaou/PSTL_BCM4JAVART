@@ -1,0 +1,42 @@
+package fr.upmc.pstl.exemples.basic;
+
+import java.util.ArrayList;
+
+import fr.upmc.components.cvm.AbstractCVM;
+import fr.upmc.pstl.AbstractTask;
+import fr.upmc.pstl.ComponentRT;
+import fr.upmc.pstl.Tasks.Task1;
+import fr.upmc.pstl.Tasks.Task2;
+import fr.upmc.pstl.Tasks.Task3;
+import fr.upmc.pstl.exemples.basic.components.Consumer;
+import fr.upmc.pstl.exemples.basic.components.Provider;
+import fr.upmc.pstl.exemples.basic.interfaces.ConsumerI;
+import fr.upmc.pstl.exemples.basic.interfaces.ProviderI;
+
+public class CVM extends AbstractCVM {
+	protected Provider provider;
+	protected Consumer consumer;
+
+	public CVM() throws Exception {
+		super();
+	}
+	
+	protected ArrayList<AbstractTask> tasksP = new ArrayList<AbstractTask>();
+	protected ArrayList<AbstractTask> tasksC = new ArrayList<AbstractTask>();
+	protected ArrayList<Object> vars = new ArrayList<Object>();
+	protected AbstractTask t1 = new Task1(provider,null,null); 
+	protected AbstractTask t2 = new Task2(provider,null,null);
+	protected AbstractTask t3 = new Task2(consumer,null,null);
+	protected int var1;//,var2,var3,var4;
+	
+	public static void main(String[] args) throws Exception {
+		CVM cvm = new CVM();
+		cvm.scheduling();
+	}
+	
+	public void scheduling() {
+		tasksP.add(t2); tasksP.add(t1); tasksC.add(t3);
+		vars.add(var1); //vars.add(var2); vars.add(var3); vars.add(var4);
+		provider = new Provider(vars, tasksP);
+	}
+}

@@ -1,0 +1,73 @@
+package fr.upmc.pstl.exemples.basic.components;
+
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+
+import fr.upmc.components.annotations.OfferedInterfaces;
+import fr.upmc.components.examples.basic_cs.ports.URIProviderInboundPort;
+import fr.upmc.components.exceptions.ComponentStartException;
+import fr.upmc.components.ports.PortI;
+import fr.upmc.pstl.AbstractComponentRT;
+import fr.upmc.pstl.AbstractTask;
+import fr.upmc.pstl.ITask;
+import fr.upmc.pstl.Tasks.Provide;
+import fr.upmc.pstl.annotations.CyclePeriod;
+import fr.upmc.pstl.exemples.basic.interfaces.ProviderI;
+
+@CyclePeriod(period = 15)
+@OfferedInterfaces(offered = {ProviderI.class})
+public class Provider 
+extends AbstractComponentRT 
+implements ProviderI{
+
+	public Provider(
+			String uri, 
+			String providerportURI, 
+			Map<String,Object> vars, 
+			List<AbstractTask> tasks) throws Exception
+	{
+		super(uri,vars, tasks);
+		
+		
+		PortI p = new URIProviderInboundPort(providerportURI, this);
+		
+		this.addPort(p);
+		
+		p.publishPort();
+	}
+
+	@Override
+	public void provide(Object[] params, CompletableFuture<Object> cf) {
+		ITask task = new Provide(this, params, cf);
+		this.addCall(task);
+	}
+	
+
+	public void cycle()  throws Exception{
+		for(AbstractTask task : this.tasks) {
+			task.execute();
+		}
+	}
+	
+	
+	public void start() throws ComponentStartException {
+		super.start();
+		
+		
+		new Thread (()->  {
+			while (true) {
+				try {
+					cycle();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	public void schedul() {
+		super.scheduler(this);
+	}
+}

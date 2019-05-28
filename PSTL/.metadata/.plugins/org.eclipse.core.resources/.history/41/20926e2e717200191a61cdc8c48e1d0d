@@ -1,0 +1,32 @@
+package fr.upmc.pstl.exemples.basic.components;
+
+import java.util.List;
+import java.util.Map;
+
+<<<<<<< HEAD
+import fr.upmc.components.annotations.RequiredInterfaces;
+=======
+import fr.upmc.components.annotations.OfferedInterfaces;
+>>>>>>> 21eea389ec9ba7a248f71ea0aabf4e050e002bc1
+import fr.upmc.pstl.AbstractComponentRT;
+import fr.upmc.pstl.AbstractTask;
+import fr.upmc.pstl.exemples.basic.interfaces.ConsumerI;
+
+@RequiredInterfaces(required = {ConsumerI.class})
+public class Consumer 
+extends AbstractComponentRT{
+
+<<<<<<< HEAD
+	public Consumer(Map<String , Object> vars, List<AbstractTask> tasks) {
+=======
+<<<<<<< HEAD
+	public Consumer(Map<String,Object> vars, List<AbstractTask> tasks) {
+=======
+	public Consumer(List<Object> vars, List<AbstractTask> tasks) {
+>>>>>>> 21eea389ec9ba7a248f71ea0aabf4e050e002bc1
+>>>>>>> db68a0a5a3f670fcc357a33514a61d5f2b75279b
+		super(vars, tasks);
+		super.scheduler(this);
+	}
+
+}

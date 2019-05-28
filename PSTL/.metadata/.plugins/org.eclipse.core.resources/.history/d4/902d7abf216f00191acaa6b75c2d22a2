@@ -1,0 +1,7 @@
+package fr.upmc.pstl;
+
+public class ExecuteCallTask  implements ITask{
+	protected ITask to_exe;
+	
+	
+}

@@ -1,0 +1,11 @@
+package fr.upmc.pstl.exemples.basic.interfaces;
+
+import java.util.concurrent.CompletableFuture;
+
+import fr.upmc.components.interfaces.RequiredI;
+
+public interface ConsumerI 
+extends RequiredI
+{
+	public void callTask2(Object[] params, CompletableFuture<Object> cf) throws Exception;
+}

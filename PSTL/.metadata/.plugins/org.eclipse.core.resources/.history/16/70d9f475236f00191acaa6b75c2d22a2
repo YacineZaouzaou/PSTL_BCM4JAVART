@@ -1,0 +1,16 @@
+package fr.upmc.pstl;
+
+
+public class ExecuteCallTask  extends AbstractTask{
+	public ExecuteCallTask(AbstractComponentRT compRT) {
+		super(compRT, null, null);
+	}
+
+
+	@Override
+	public void execute() {
+		super.compRT.getLastTask().exe
+	}
+	
+	
+}

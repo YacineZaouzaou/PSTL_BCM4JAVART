@@ -1,0 +1,19 @@
+package pobj.expr;
+
+import java.util.Map;
+
+public class Question8 {
+	
+	public static Map<String,Integer> env1(){
+		
+	}
+	
+	public static Map<String,Integer> env1(){
+		
+	}
+	
+	public static Map<String,Integer> env1(){
+	
+	}
+
+}

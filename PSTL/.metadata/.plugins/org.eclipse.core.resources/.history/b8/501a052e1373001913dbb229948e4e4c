@@ -1,0 +1,10 @@
+package fr.upmc.pstl.exemples.basic;
+
+import fr.upmc.components.connectors.AbstractConnector;
+import fr.upmc.pstl.exemples.basic.interfaces.ConsumerI;
+
+public class ServiceConnector 
+extends AbstractConnector 
+implements ConsumerI {
+
+}

@@ -1,0 +1,12 @@
+package pobj.expr;
+
+public class Question10 {
+	
+	public static boolean isConstant(Expression e) {
+		
+	}
+	
+	public static int evalConstantExpression(Expression e) {
+		
+	}
+}

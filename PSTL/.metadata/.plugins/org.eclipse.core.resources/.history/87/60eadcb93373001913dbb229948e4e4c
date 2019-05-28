@@ -1,0 +1,21 @@
+package fr.upmc.pstl.exemples.basic;
+
+import java.util.concurrent.CompletableFuture;
+
+import fr.upmc.components.connectors.AbstractConnector;
+import fr.upmc.pstl.exemples.basic.interfaces.ConsumerI;
+import fr.upmc.pstl.exemples.basic.interfaces.ProviderI;
+
+public class ServiceConnector 
+extends AbstractConnector 
+implements ConsumerI {
+
+	
+	
+	@Override
+	public void get(Object[] params, CompletableFuture<Object> cf) throws Exception {
+		((ProviderI) this.offering).provide(params, cf);
+	}
+	
+	
+}

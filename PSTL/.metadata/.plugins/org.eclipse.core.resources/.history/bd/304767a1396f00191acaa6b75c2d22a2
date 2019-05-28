@@ -1,0 +1,8 @@
+package fr.upmc.pstl.exemples.basic.components;
+
+import fr.upmc.components.annotations.OfferedInterfaces;
+
+@OfferedInterfaces(offered = {ProviderI.class})
+public class Provider {
+
+}

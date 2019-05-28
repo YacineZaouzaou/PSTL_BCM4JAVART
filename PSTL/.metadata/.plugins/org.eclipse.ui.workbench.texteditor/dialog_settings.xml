@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
+<<<<<<< HEAD
+		<item value="false" key="isRegEx"/>
+		<item value="vars" key="selection"/>
+		<item value="false" key="casesensitive"/>
+		<item value="false" key="incremental"/>
+		<item value="true" key="wrap"/>
+		<item value="false" key="wholeword"/>
+		<list key="findhistory">
+			<item value="vars"/>
+			<item value="tas_semantique_ect"/>
+			<item value="task_semantique"/>
+			<item value="r.task"/>
+=======
+		<item key="isRegEx" value="false"/>
+		<item key="selection" value="AbstractTask"/>
+		<item key="casesensitive" value="false"/>
+		<item key="incremental" value="false"/>
+		<item key="wrap" value="true"/>
+		<item key="wholeword" value="false"/>
+		<list key="findhistory">
+			<item value="ITask"/>
+>>>>>>> db68a0a5a3f670fcc357a33514a61d5f2b75279b
+			<item value="property"/>
+			<item value="iastvisitor"/>
+			<item value="exitProg"/>
+			<item value="enterUnl"/>
+			<item value="exitBinary"/>
+			<item value="unless"/>
+			<item value="enterAlternative"/>
+			<item value="exitUnl"/>
+			<item value="newline"/>
+		</list>
+		<list key="replacehistory">
+<<<<<<< HEAD
+			<item value="task_semantique_ect"/>
+			<item value="tas_semantique_ect"/>
+			<item value="task_semantique"/>
+		</list>
+	</section>
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
+		<item value="344" key="DIALOG_WIDTH"/>
+		<item value="1|Ubuntu|11.0|0|GTK|1|" key="DIALOG_FONT_NAME"/>
+		<item value="440" key="DIALOG_HEIGHT"/>
+		<item value="1391" key="DIALOG_X_ORIGIN"/>
+		<item value="110" key="DIALOG_Y_ORIGIN"/>
+=======
+			<item value="AbstractTask"/>
+		</list>
+	</section>
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
+		<item key="DIALOG_WIDTH" value="344"/>
+		<item key="DIALOG_FONT_NAME" value="1|Ubuntu|11.0|0|GTK|1|"/>
+		<item key="DIALOG_HEIGHT" value="440"/>
+		<item key="DIALOG_X_ORIGIN" value="33"/>
+		<item key="DIALOG_Y_ORIGIN" value="92"/>
+>>>>>>> db68a0a5a3f670fcc357a33514a61d5f2b75279b
+	</section>
+</section>

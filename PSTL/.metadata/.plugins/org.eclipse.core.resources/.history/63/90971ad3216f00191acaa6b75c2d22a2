@@ -1,0 +1,13 @@
+package fr.upmc.pstl;
+
+public class ExecuteCallTask  extends AbstractTask{
+	protected ITask to_exe;
+
+	@Override
+	public void execute() {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	
+}

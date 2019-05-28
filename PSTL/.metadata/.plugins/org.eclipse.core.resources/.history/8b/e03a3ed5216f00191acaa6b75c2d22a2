@@ -1,0 +1,19 @@
+package fr.upmc.pstl;
+
+import java.util.concurrent.CompletableFuture;
+
+public class ExecuteCallTask  extends AbstractTask{
+	public ExecuteCallTask(AbstractComponentRT compRT) {
+		super(compRT, null, null);
+	}
+
+	protected ITask to_exe;
+
+	@Override
+	public void execute() {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	
+}

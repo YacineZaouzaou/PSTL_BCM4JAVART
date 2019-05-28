@@ -1,0 +1,18 @@
+package fr.upmc.pstl;
+
+import java.util.concurrent.CompletableFuture;
+
+public abstract class AbstractTaskRt implements ITask{
+	protected AbstractComponentRT compRT; 
+	protected Object[] params;
+	protected CompletableFuture<Object> cf;
+	
+	public AbstractTaskRt(AbstractComponentRT compRT,Object[] params, CompletableFuture<Object> cf) {
+		this.compRT = compRT;
+		this.params = params;
+		this.cf = cf;	
+	}
+
+	public abstract void execute() throws Exception;
+	
+}

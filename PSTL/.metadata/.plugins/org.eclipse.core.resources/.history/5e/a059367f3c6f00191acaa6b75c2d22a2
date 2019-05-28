@@ -1,0 +1,18 @@
+package fr.upmc.pstl;
+import java.util.List;
+import fr.upmc.pstl.annotations.CyclePeriod;
+
+@CyclePeriod(period = 15)
+public class ComponentRT extends AbstractComponentRT {
+	
+	public ComponentRT(List<Object> vars, List<AbstractTask> tasks) {
+		super(vars, tasks);
+		super.scheduler(this);
+	}
+
+	public static void main(String[] args) {}
+	
+}
+
+
+

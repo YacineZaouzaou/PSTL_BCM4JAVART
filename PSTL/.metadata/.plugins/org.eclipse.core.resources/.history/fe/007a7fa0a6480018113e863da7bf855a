@@ -1,0 +1,30 @@
+package pobj.expr;
+
+public class VisitorEval implements IVisitor<Integer> {
+
+	@Override
+	public Integer visit(Constant c) {
+		return c.getValue();
+	}
+
+	@Override
+	public Integer visit(Add e) {
+		int i1 = e.getLeft().accept(this);
+		int i2 = e.getRight().accept(this);
+		return i1+i2;
+	}
+
+	@Override
+	public Integer visit(Mult e) {
+		int i1 = e.getLeft().accept(this);
+		int i2 = e.getRight().accept(this);
+		return i1*i2;
+	}
+
+	@Override
+	public Integer visit(Var v) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}
