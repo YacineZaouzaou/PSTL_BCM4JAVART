@@ -3,7 +3,6 @@ package fr.upmc.pstl;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
@@ -27,6 +26,7 @@ import fr.upmc.pstl.annotations.Semantique;
 import fr.upmc.pstl.annotations.TaskAnnotation;
 import fr.upmc.pstl.exceptions.CircularityException;
 import fr.upmc.pstl.exceptions.PrecedanceException;
+import fr.upmc.pstl.exceptions.SchedulingException;
 import fr.upmc.pstl.exceptions.TimeException;
 
 
@@ -227,6 +227,7 @@ public abstract class AbstractComponentRT extends AbstractComponent
 										smallest_time_limite_offered, latest_start_time_offered , longer_time_offered_methods  );
 				tasks.add(m);
 			}
+			
 			
 			
 		
