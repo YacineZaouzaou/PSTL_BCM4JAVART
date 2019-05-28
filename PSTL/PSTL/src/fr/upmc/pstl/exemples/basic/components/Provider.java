@@ -52,6 +52,7 @@ implements ProviderI{
 	
 	public void start() throws ComponentStartException {
 		super.start();
+		this.schedul();
 		try {
 			cycle();
 		} catch (Exception e) {

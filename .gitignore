@@ -1,6 +1,8 @@
 bin/*
 .metadata
-.mylyn/.taskListIndex/
+.metadata/*
+.mylyn/.taskListIndex
+.mylyn/.taskListIndex/*
 *.log
 .plugins/org.eclipse.m2e.core/nexus/
 *.swp

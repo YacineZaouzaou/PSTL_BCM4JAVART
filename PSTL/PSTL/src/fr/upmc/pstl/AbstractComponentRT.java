@@ -25,6 +25,7 @@ import fr.upmc.pstl.annotations.Semantique;
 import fr.upmc.pstl.annotations.TaskAnnotation;
 import fr.upmc.pstl.exceptions.CircularityException;
 import fr.upmc.pstl.exceptions.PrecedanceException;
+import fr.upmc.pstl.exceptions.SchedulingException;
 import fr.upmc.pstl.exceptions.TimeException;
 
 
@@ -197,7 +198,7 @@ public abstract class AbstractComponentRT extends AbstractComponent
 				}
 				totalTime += annotation.wcet();
 				if (annotation.timeLimit() < annotation.wcet())
-					throw new TimeException("impossible de satisfy "+TaskAnnotation.class+" deadLine");	
+					throw new TimeException("impossible to satisfy "+TaskAnnotation.class+" deadLine");	
 			}
 			
 			if ((totalTime+longer_time_offered_methods) > r.getClass().getAnnotation(CyclePeriod.class).period())
