@@ -1,8 +1,0 @@
-package fr.upmc.pstl.exemples.basic.ports;
-
-import fr.upmc.components.ports.AbstractOutboundPort;
-import fr.upmc.pstl.exemples.basic.interfaces.ConsumerI;
-
-public class ConsumerOutBoundPort extends AbstractOutboundPort implements ConsumerI {
-
-}

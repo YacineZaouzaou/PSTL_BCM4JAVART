@@ -1,8 +1,0 @@
-package fr.upmc.pstl.exemples.basic.interfaces;
-
-import fr.upmc.components.interfaces.RequiredI;
-
-public interface ProviderI 
-extends RequiredI{
-
-}

@@ -1,9 +1,0 @@
-package fr.upmc.pstl.exemples.basic.interfaces;
-
-import fr.upmc.components.interfaces.OfferedI;
-
-public interface ConsumerI 
-extends RequiredI
-{
-
-}

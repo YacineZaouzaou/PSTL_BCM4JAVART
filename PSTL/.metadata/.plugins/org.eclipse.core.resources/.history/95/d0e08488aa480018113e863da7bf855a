@@ -1,7 +1,0 @@
-package pobj.expr;
-
-public class VisitorEvalVar extends VisitorEval {
-	public VisitorEvalVar(Map<String,Integer> map) {
-		
-	}
-}

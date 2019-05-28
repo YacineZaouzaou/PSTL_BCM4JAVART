@@ -1,7 +1,0 @@
-package fr.upmc.pstl;
-
-
-public interface ITask {
-	
-	public void execute();
-}

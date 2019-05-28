@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<session version="1.0">
-<refactoring comment="Copy element &apos;C&apos; to &apos;ILP-UPMC/Java/src/com.paracamplus.ilp4.TME8&apos;&#x0A;- Original project: &apos;ILP-UPMC&apos;&#x0A;- Destination element: &apos;ILP-UPMC/Java/src/com.paracamplus.ilp4.TME8&apos;&#x0A;- Original element: &apos;C&apos;" description="Copy folder" destination="/Java\/src&lt;com.paracamplus.ilp4.TME8" element1="C" files="0" flags="589830" folders="1" id="org.eclipse.jdt.ui.copy" policy="org.eclipse.jdt.ui.copyResources" stamp="1546254029094" units="0" version="1.0"/>
-</session>
