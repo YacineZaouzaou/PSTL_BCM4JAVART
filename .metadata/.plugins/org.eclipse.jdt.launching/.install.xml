@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <dirs>
-    <entry loc="/usr/lib/jvm/java-11-openjdk-amd64" stamp="1557895963397"/>
-    <entry loc="/home/yacine/java_oracle/jre1.8.0_201" stamp="1544903127000"/>
+<entry loc="/usr/lib/jvm/java-8-oracle" stamp="1539244284000"/>
+<entry loc="/usr/lib/jvm/java-11-openjdk-amd64" stamp="1557895963397"/>
+<entry loc="/home/yacine/java_oracle/jre1.8.0_201" stamp="1544903127000"/>
 </dirs>
