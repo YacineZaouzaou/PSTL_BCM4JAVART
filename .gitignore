@@ -1,4 +1,5 @@
 bin/*
+.classpath
 .metadata
 .metadata/*
 .mylyn/.taskListIndex
