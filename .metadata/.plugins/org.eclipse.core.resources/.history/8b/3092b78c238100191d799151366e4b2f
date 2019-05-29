@@ -1,6 +1,0 @@
-package fr.upmc.pstl;
-
-
-public interface ITask {
-	
-}

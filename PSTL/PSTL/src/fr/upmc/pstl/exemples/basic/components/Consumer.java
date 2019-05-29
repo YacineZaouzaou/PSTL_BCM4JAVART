@@ -59,8 +59,7 @@ extends AbstractComponentRT{
 	}
 	
 	
-    @AccessedVars(accessType = { AccessType.WRITE }, vars = { "var2" })
-    @TaskAnnotation(timeLimit = 9, wcet = 3 , startTime = 0)
+    
     public void get () {
             CompletableFuture<Object> cf = new CompletableFuture<>();
             try {

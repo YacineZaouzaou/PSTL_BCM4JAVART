@@ -41,13 +41,6 @@ implements ProviderI{
 		
 		this.uriGetterPort.publishPort();
 	}
-
-	@Override
-	public void provide(Object[] params, CompletableFuture<Object> cf) {
-		ICommand task = new Provide(this, params, cf);
-		this.addCall(task);
-	}
-
 	
 	
 	public void start() throws ComponentStartException {
@@ -66,7 +59,7 @@ implements ProviderI{
 	}
 	
 	
-	@AccessedVars(accessType = { AccessType.WRITE }, vars = { "var2" })
+	@AccessedVars(accessType = { AccessType.WRITE }, vars = { "var1" })
     @TaskAnnotation(timeLimit = 9, wcet = 3 , startTime = 0)
     public void incremente () {
             try {
@@ -79,11 +72,11 @@ implements ProviderI{
     }
     
 	
-	@AccessedVars(accessType = { AccessType.READ }, vars = { "var1" })
-    @TaskAnnotation(timeLimit = 9, wcet = 3 , startTime = 0)
-    public void provide (CompletableFuture<Integer> cf , Object [] args) {
+    public void provide (Object[] params, CompletableFuture<Object> cf) {
             System.out.println("completing the cf");
             int var1 = (int) this.getVars().get("var1");
             cf.complete(var1);
     }
+
+	
 }
