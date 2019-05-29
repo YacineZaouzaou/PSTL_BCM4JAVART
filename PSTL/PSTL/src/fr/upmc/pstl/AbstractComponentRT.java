@@ -400,11 +400,9 @@ public abstract class AbstractComponentRT extends AbstractComponent
 					return type;
 				}
 			};
-			System.out.println("début modif "+m.getAnnotation(TaskAnnotation.class).timeLimit());
-			
-			Object handler_TaskAnnotation = Proxy.getInvocationHandler(AbstractComponentRT.class.getDeclaredMethod("executeCallTask").getAnnotation(a));
+
+			Object handler_TaskAnnotation = Proxy.getInvocationHandler(m.getAnnotation(TaskAnnotation.class));
             Field memberValue_field_TaskAnnotation = handler_TaskAnnotation.getClass().getDeclaredField("memberValues");
-//            System.out.println("the class of handler is : "+handler_TaskAnnotation.getClass().getCanonicalName());
             memberValue_field_TaskAnnotation.setAccessible(true);
             Map <String , Object> memeberValues_map_TaskAnnotation = (Map<String , Object>) memberValue_field_TaskAnnotation.get(handler_TaskAnnotation);
             memeberValues_map_TaskAnnotation.put("wcet", wcet);
@@ -412,17 +410,13 @@ public abstract class AbstractComponentRT extends AbstractComponent
             memeberValues_map_TaskAnnotation.put("startTime", startTime);
             
             
-            
-            Object handler_VarAnnotation = Proxy.getInvocationHandler(AbstractComponentRT.class.getDeclaredMethod("executeCallTask").getAnnotation(b));
+            Object handler_VarAnnotation = Proxy.getInvocationHandler(m.getAnnotation(AccessedVars.class));
             Field memberValue_field_VarAnnotation = handler_VarAnnotation.getClass().getDeclaredField("memberValues");
             memberValue_field_VarAnnotation.setAccessible(true);
             Map <String , Object> memeberValues_map_VarAnnotation = (Map<String , Object>) memberValue_field_VarAnnotation.get(handler_VarAnnotation);
             memeberValues_map_TaskAnnotation.put("vars", vars);
             memeberValues_map_TaskAnnotation.put("accessType", type);
             
-            
-            
-            System.out.println("modif terminée "+m.getAnnotation(TaskAnnotation.class).timeLimit());
             
             
 //			Method annotationData = Class.class.getDeclaredMethod("annotationData");
@@ -433,7 +427,7 @@ public abstract class AbstractComponentRT extends AbstractComponent
 //			Map<Class<? extends Annotation>, Annotation> annotation = (Map<Class<? extends Annotation>, Annotation>) annotations.get(annotationField);
 //			annotation.put(a, new_annotation_task);
 //			annotation.put(b, new_annotation_var);
-		} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException | NoSuchMethodException  e) {
+		} catch (Exception  e) {
 			e.printStackTrace();
 		} 
 		
