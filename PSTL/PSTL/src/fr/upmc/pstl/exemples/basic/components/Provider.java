@@ -1,6 +1,5 @@
 package fr.upmc.pstl.exemples.basic.components;
 
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -8,9 +7,6 @@ import fr.sorbonne_u.components.annotations.OfferedInterfaces;
 import fr.sorbonne_u.components.exceptions.ComponentShutdownException;
 import fr.sorbonne_u.components.exceptions.ComponentStartException;
 import fr.upmc.pstl.AbstractComponentRT;
-import fr.upmc.pstl.ICommand;
-import fr.upmc.pstl.TaskCommand;
-import fr.upmc.pstl.Tasks.Provide;
 import fr.upmc.pstl.annotations.AccessType;
 import fr.upmc.pstl.annotations.AccessedVars;
 import fr.upmc.pstl.annotations.CyclePeriod;
@@ -32,9 +28,10 @@ implements ProviderI{
 	public Provider(
 			String uri, 
 			String providerportURI, 
-			Map<String,Object> vars) throws Exception
+			Map<String,Object> vars,
+			int nbThreads) throws Exception
 	{
-		super(uri,vars,1);
+		super(uri,vars,nbThreads);
 		
 		
 		this.uriGetterPort = new ProviderInboundPort(providerportURI, this);

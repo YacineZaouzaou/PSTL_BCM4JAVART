@@ -26,9 +26,10 @@ extends AbstractComponentRT{
 	public Consumer(
 			String uri, 
 			String consumerPortURI,
-			Map<String,Object> vars) throws Exception
+			Map<String,Object> vars,
+			int nbThreads) throws Exception
 	{
-		super(uri,vars,1);
+		super(uri,vars,nbThreads);
 		
 		
 		this.uriGetterPort = new ConsumerOutBoundPort(consumerPortURI, this);

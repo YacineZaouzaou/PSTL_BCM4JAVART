@@ -6,9 +6,6 @@ import java.util.Map;
 
 import fr.sorbonne_u.components.cvm.AbstractCVM;
 import fr.upmc.pstl.TaskCommand;
-import fr.upmc.pstl.Tasks.Get;
-import fr.upmc.pstl.Tasks.Incremente;
-import fr.upmc.pstl.Tasks.Provide;
 import fr.upmc.pstl.exemples.basic.components.Consumer;
 import fr.upmc.pstl.exemples.basic.components.Provider;
 
@@ -39,19 +36,17 @@ public class CVM extends AbstractCVM {
 	
 	public void deploy() throws Exception {
 		
-		 //vars.add(var3); vars.add(var4);
-		
 		provider = new Provider(CVM.PROVIDER_COMPONENT_URI,CVM.URIProviderInboundPortURI,
-								varsP);
+								varsP,1);
 		consumer = new Consumer(CVM.CONSUMER_COMPONENT_URI, CVM.URIGetterOutboundPortURI,
-							varsC);
+							varsC,1);
 		
 		
-		t1 = new Incremente(provider,null,null); // Incremente la variable
-		t2 = new Provide(provider,null,null); // get la variable
-		t3 = new Get(consumer,null,null);
+//		t1 = new Incremente(provider,null,null); // Incremente la variable
+//		t2 = new Provide(provider,null,null); // get la variable
+//		t3 = new Get(consumer,null,null);
 		
-		tasksP.add(t1); tasksP.add(t2); tasksC.add(t3);
+//		tasksP.add(t1); tasksP.add(t2); tasksC.add(t3);
 		varsP.put("var1",var1); varsC.put("var2",var2);				
 		
 		this.deployedComponents.add(provider);

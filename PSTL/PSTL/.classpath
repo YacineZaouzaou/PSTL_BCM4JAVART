@@ -1,15 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry exported="true" kind="lib" path="src/lib/BCM4JAVA.jar"/>
-	<classpathentry exported="true" kind="lib" path="src/lib/commons-math3-3.5-javadoc.jar"/>
-	<classpathentry exported="true" kind="lib" path="src/lib/commons-math3-3.5.jar"/>
-	<classpathentry exported="true" kind="lib" path="src/lib/javassist.jar"/>
-	<classpathentry exported="true" kind="lib" path="src/lib/jcip-annotations.jar"/>
-<<<<<<< HEAD
+	<classpathentry kind="lib" path="src/lib/BCM4JAVA.jar"/>
+	<classpathentry kind="lib" path="src/lib/commons-math3-3.5-javadoc.jar"/>
+	<classpathentry kind="lib" path="src/lib/commons-math3-3.5.jar"/>
+	<classpathentry kind="lib" path="src/lib/javassist.jar"/>
+	<classpathentry kind="lib" path="src/lib/jcip-annotations.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-=======
-	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/java-8-oracle"/>
->>>>>>> 3ab299337cbf787c8141974e391ae0d9264c5eb1
 	<classpathentry kind="output" path="bin"/>
 </classpath>

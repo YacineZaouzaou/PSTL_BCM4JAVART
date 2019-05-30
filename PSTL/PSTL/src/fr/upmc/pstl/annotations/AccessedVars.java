@@ -1,6 +1,5 @@
 package fr.upmc.pstl.annotations;
 
-import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import java.lang.annotation.ElementType;

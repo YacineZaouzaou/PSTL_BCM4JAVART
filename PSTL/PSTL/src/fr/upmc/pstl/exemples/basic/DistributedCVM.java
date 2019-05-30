@@ -6,9 +6,6 @@ import java.util.Map;
 
 import fr.sorbonne_u.components.cvm.AbstractDistributedCVM;
 import fr.upmc.pstl.TaskCommand;
-import fr.upmc.pstl.Tasks.Get;
-import fr.upmc.pstl.Tasks.Incremente;
-import fr.upmc.pstl.Tasks.Provide;
 import fr.upmc.pstl.exemples.basic.components.Consumer;
 import fr.upmc.pstl.exemples.basic.components.Provider;
 
@@ -62,13 +59,13 @@ extends		AbstractDistributedCVM
 			this.provider =
 				new Provider(PROVIDER_COMPONENT_URI,
 								URIProviderInboundPortURI,
-								varsP) ;
+								varsP,1) ;
 			
-			t1 = new Incremente(provider,null,null); // Incremente la variable
-			t2 = new Provide(provider,null,null); // get la variable
+//			t1 = new Incremente(provider,null,null); // Incremente la variable
+//			t2 = new Provide(provider,null,null); // get la variable
 			
-			tasksP.add(t1); tasksP.add(t2);
-			varsP.put("var1",var1);
+//			tasksP.add(t1); tasksP.add(t2);
+//			varsP.put("var1",var1);
 			
 			provider.schedul();
 			
@@ -85,10 +82,10 @@ extends		AbstractDistributedCVM
 			// create the consumer component
 			this.consumer = new Consumer(CONSUMER_COMPONENT_URI,
 											   URIConsumerOutboundPortURI,
-											   varsC) ;
+											   varsC,1) ;
 			
-			t3 = new Get(consumer,null,null);
-			tasksC.add(t3);
+//			t3 = new Get(consumer,null,null);
+//			tasksC.add(t3);
 			varsC.put("var2",var2);	
 			
 			provider.schedul();
