@@ -42,7 +42,7 @@ public class CVM extends AbstractCVM {
 		 //vars.add(var3); vars.add(var4);
 		
 		provider = new Provider(CVM.PROVIDER_COMPONENT_URI,CVM.URIProviderInboundPortURI,
-								varsP, tasksP);
+								varsP);
 		consumer = new Consumer(CVM.CONSUMER_COMPONENT_URI, CVM.URIGetterOutboundPortURI,
 							varsC);
 		
@@ -60,9 +60,6 @@ public class CVM extends AbstractCVM {
 		consumer.doPortConnection(
 				URIGetterOutboundPortURI, 
 				URIProviderInboundPortURI, ServiceConnector.class.getCanonicalName());
-		
-		
-		
 		
 		super.deploy();
 	}

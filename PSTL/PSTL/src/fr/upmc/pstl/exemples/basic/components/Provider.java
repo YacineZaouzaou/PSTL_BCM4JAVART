@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import fr.sorbonne_u.components.annotations.OfferedInterfaces;
+import fr.sorbonne_u.components.exceptions.ComponentShutdownException;
 import fr.sorbonne_u.components.exceptions.ComponentStartException;
 import fr.upmc.pstl.AbstractComponentRT;
 import fr.upmc.pstl.ICommand;
@@ -13,11 +14,13 @@ import fr.upmc.pstl.Tasks.Provide;
 import fr.upmc.pstl.annotations.AccessType;
 import fr.upmc.pstl.annotations.AccessedVars;
 import fr.upmc.pstl.annotations.CyclePeriod;
+import fr.upmc.pstl.annotations.Semantique;
 import fr.upmc.pstl.annotations.TaskAnnotation;
+import fr.upmc.pstl.exceptions.SchedulingException;
 import fr.upmc.pstl.exemples.basic.interfaces.ProviderI;
 import fr.upmc.pstl.exemples.basic.ports.ProviderInboundPort;
 
-@CyclePeriod(period = 15)
+@CyclePeriod(period = 1000)
 @OfferedInterfaces(offered = {ProviderI.class})
 public class Provider 
 extends AbstractComponentRT 
@@ -29,8 +32,7 @@ implements ProviderI{
 	public Provider(
 			String uri, 
 			String providerportURI, 
-			Map<String,Object> vars, 
-			List<TaskCommand> tasks) throws Exception
+			Map<String,Object> vars) throws Exception
 	{
 		super(uri,vars);
 		
@@ -55,12 +57,23 @@ implements ProviderI{
 	}
 	
 	public void schedul() {
-        super.scheduler_multi_thread(this);
+		try  {
+			super.scheduler_multi_thread(this);
+		}catch (SchedulingException e) {
+			try {
+				this.shutdown();
+			} catch (ComponentShutdownException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			e.printStackTrace();
+		}
 	}
 	
 	
 	@AccessedVars(accessType = { AccessType.WRITE }, vars = { "var1" })
     @TaskAnnotation(timeLimit = 9, wcet = 3 , startTime = 0)
+	@Semantique
     public void incremente () {
             try {
                     int var1 = (int) this.getVars().get("var1");
@@ -71,10 +84,12 @@ implements ProviderI{
             
     }
     
-	
+	@AccessedVars(accessType = { AccessType.READ }, vars = { "var1" })
+    @TaskAnnotation(timeLimit = 9, wcet = 3 , startTime = 0)
     public void provide (Object[] params, CompletableFuture<Object> cf) {
             System.out.println("completing the cf");
             int var1 = (int) this.getVars().get("var1");
+            System.out.flush();
             cf.complete(var1);
     }
 

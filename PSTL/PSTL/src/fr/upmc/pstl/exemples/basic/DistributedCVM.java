@@ -62,7 +62,7 @@ extends		AbstractDistributedCVM
 			this.provider =
 				new Provider(PROVIDER_COMPONENT_URI,
 								URIProviderInboundPortURI,
-								varsP, tasksP) ;
+								varsP) ;
 			
 			t1 = new Incremente(provider,null,null); // Incremente la variable
 			t2 = new Provide(provider,null,null); // get la variable
