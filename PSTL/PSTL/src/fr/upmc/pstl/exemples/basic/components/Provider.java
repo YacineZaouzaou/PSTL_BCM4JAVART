@@ -16,7 +16,7 @@ import fr.upmc.pstl.exceptions.SchedulingException;
 import fr.upmc.pstl.exemples.basic.interfaces.ProviderI;
 import fr.upmc.pstl.exemples.basic.ports.ProviderInboundPort;
 
-@CyclePeriod(period = 15)
+@CyclePeriod(period = 150)
 @OfferedInterfaces(offered = {ProviderI.class})
 public class Provider 
 extends AbstractComponentRT 
@@ -43,6 +43,7 @@ implements ProviderI{
 	
 	
 	public void start() throws ComponentStartException {
+		System.out.println("starting : "+this);
 		super.start();
 		this.schedul();
 		try {
@@ -57,9 +58,10 @@ implements ProviderI{
 		try  {
 			super.scheduler_multi_thread(this);
 		}catch (SchedulingException e) {
-			for (ScheduledThreadPoolExecutor exe : executors) {
-				exe.shutdownNow();
-			}
+			e.printStackTrace();
+//			for (ScheduledThreadPoolExecutor exe : executors) {
+//				exe.shutdownNow();
+//			}
 		}
 	}
 	
@@ -77,9 +79,9 @@ implements ProviderI{
     }
     
 	@AccessedVars(accessType = { AccessType.READ }, vars = { "var1" })
-    @TaskAnnotation(timeLimit = 14, wcet = 7 , startTime = 0)
+    @TaskAnnotation(timeLimit = 12, wcet = 7 , startTime = 0)
     public void provide (Object[] params, CompletableFuture<Object> cf) {
-            System.out.println("completing the cf by : "+this+" with thread "+Thread.currentThread());
+            System.out.println("completing the cf by : "+this);
             int var1 = (int) this.getVars().get("var1");
             System.out.flush();
             cf.complete(var1);

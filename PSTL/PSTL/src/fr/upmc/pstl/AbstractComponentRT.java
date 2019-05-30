@@ -90,6 +90,9 @@ public abstract class AbstractComponentRT extends AbstractComponent
 	protected final List<Map<Method , Long>> scheduler_multi_thread (AbstractComponentRT r) throws SchedulingException{
 		
 		
+		
+		
+		System.out.println("trying to schedul : "+this);
 		this.tasks_list = new ArrayList<Map<Method , Long>>();
 		// looking for semantic task ?!
 		List<Method> tasks = getAllMethodsAsList(r);
@@ -576,9 +579,6 @@ public abstract class AbstractComponentRT extends AbstractComponent
             
             memeberValues_map_VarAnnotation.put("vars", vars);
             memeberValues_map_VarAnnotation.put("accessType", type);
-            
-            System.out.println("var "+vars[0]);
-            
 		} catch (Exception  e) {
 			e.printStackTrace();
 		} 
@@ -729,7 +729,6 @@ public abstract class AbstractComponentRT extends AbstractComponent
 	
 	
 	public void cycle () throws Exception {
-		System.out.println("cycle is launched");
 		long cycle_time = ((CyclePeriod) this.getClass().getAnnotation(CyclePeriod.class)).period();
 
 		for (Map<Method , Long> i : this.tasks_list) {
@@ -766,6 +765,7 @@ public abstract class AbstractComponentRT extends AbstractComponent
 	public void executeCallTask () throws Exception {
 		ICommand task = getNextTask();
 		if(task!=null) {
+			System.out.println("executing the next command");
 			((TaskCommand)task).execute();
 		}
 	}

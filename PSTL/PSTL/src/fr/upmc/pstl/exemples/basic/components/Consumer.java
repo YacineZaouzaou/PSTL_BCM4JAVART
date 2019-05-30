@@ -48,6 +48,7 @@ extends AbstractComponentRT{
 	
 	
 	public void start() throws ComponentStartException {
+		System.out.println("starting : "+this);
 		super.start();
 		this.schedul();
 		try {
@@ -74,19 +75,27 @@ extends AbstractComponentRT{
 	}
 	
 	
+	CompletableFuture<Object> cf = new CompletableFuture<>();
+	boolean first = true;
+	
 	@AccessedVars(accessType = { AccessType.WRITE }, vars = { "var2" })
     @TaskAnnotation(timeLimit = 9, wcet = 3 , startTime = 0)
 	@Semantique
     public void get () {
-            CompletableFuture<Object> cf = new CompletableFuture<>();
             try {
+            	if (first) {
+            		first = false;
                     this.getUriGetterPort().get(null, cf);
-                    System.out.println("trying to print");
-                    if (cf.isDone()) {
-                    	System.out.println("getting value "+(Integer) cf.get());
-                    }else {
-                    	System.out.println("not done yet");
-                    }
+
+            	}
+            	if (cf.isDone()) {
+            		System.out.println("getting value "+(Integer) cf.get());
+            		cf = new CompletableFuture<>();
+                    this.getUriGetterPort().get(null, cf);
+                    
+            	}else {
+            		System.out.println("no response from provider");
+            	}
                     System.out.flush();
             } catch (Exception e) {
                     // TODO Auto-generated catch block
@@ -94,6 +103,24 @@ extends AbstractComponentRT{
             }
             
     }
+	
+//	@AccessedVars(accessType = { AccessType.WRITE }, vars = { "var2" })
+//    @TaskAnnotation(timeLimit = 9, wcet = 3 , startTime = 0)
+//	@Semantique
+//    public void get () {
+//            try {
+//            	CompletableFuture<Object> cf = new CompletableFuture<>();
+//            	this.getUriGetterPort().get(null, cf);
+//                    System.out.println("trying to print");
+//            		System.out.println("getting value "+(Integer) cf.get());
+//                    
+//            } catch (Exception e) {
+//                    // TODO Auto-generated catch block
+//                    e.printStackTrace();
+//            }
+//            
+//    }
+
 
 
 }
