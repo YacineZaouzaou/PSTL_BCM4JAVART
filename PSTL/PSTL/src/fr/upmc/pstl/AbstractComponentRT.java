@@ -91,7 +91,7 @@ public abstract class AbstractComponentRT extends AbstractComponent
 		for (int i = 1 ; i <= super.nbThreads ; i ++) {
 			try {
 				List<List<Method>> lists = split_list_task(tasks, i);
-
+				System.out.println("i "+i);
 				for (List l : lists) {
 					this.tasks_list.add(this.scheduler(r, l));	
 				}
@@ -119,7 +119,6 @@ public abstract class AbstractComponentRT extends AbstractComponent
 					| NoSuchMethodException 
 					| SecurityException e) {
 				this.tasks_list = new ArrayList<Map<Method , Long>>();
-				e.printStackTrace();
 			}
 		}
 		throw new SchedulingException("impossible to schedul");
@@ -228,7 +227,7 @@ public abstract class AbstractComponentRT extends AbstractComponent
 						s1write.add(mi.getKey().getAnnotation(AccessedVars.class).vars()[a]);
 				}
 
-				for(int j=0; i<tasks.size(); j++) {
+				for(int j=0; j<tasks.size(); j++) {
 					if(i!=j) {
 						Map<Method,Long> mapj = tasks.get(j);
 						for(Map.Entry<Method, Long> mj : mapj.entrySet() ) {
@@ -487,7 +486,9 @@ public abstract class AbstractComponentRT extends AbstractComponent
 		}
 		
 		List<Method> ect_list = new ArrayList<>();
-		int nb_ect = (int) ((periode - semantique_time)/largest_wcet);
+		int nb_ect = 0;
+		if(largest_wcet!=0)
+			nb_ect = (int) ((periode - semantique_time)/largest_wcet);
 
 		try {
 			for( int i = 0 ; i < nb_ect ; i ++) {
@@ -675,8 +676,9 @@ public abstract class AbstractComponentRT extends AbstractComponent
 	
 	
 	private boolean must_be_with(Method task , List<Method> list) {
-		String [] var_accessed = ((AccessedVars) task.getClass().getAnnotation(AccessedVars.class)).vars();
-		AccessType [] type_access = ((AccessedVars) task.getClass().getAnnotation(AccessedVars.class)).accessType();
+
+		String [] var_accessed = ((AccessedVars) task.getAnnotation(AccessedVars.class)).vars();
+		AccessType [] type_access = ((AccessedVars) task.getAnnotation(AccessedVars.class)).accessType();
 		Set<String> s1 = filtre_by_accessing_type(var_accessed , type_access);
 		
 		String [] var_accessed_by_other;
@@ -684,7 +686,7 @@ public abstract class AbstractComponentRT extends AbstractComponent
 		
 		for (Method t : list) {
 			var_accessed_by_other = ((AccessedVars) t.getAnnotation(AccessedVars.class)).vars();
-			type_access_by_other = ((AccessedVars) task.getAnnotation(AccessedVars.class)).accessType();
+			type_access_by_other = ((AccessedVars) t.getAnnotation(AccessedVars.class)).accessType();
 			Set<String> s2 = filtre_by_accessing_type(var_accessed_by_other , type_access_by_other);
 			s2.retainAll(s1);
 			if (s2.size() != 0) {

@@ -69,7 +69,7 @@ implements ProviderI{
 	
 	
 	@AccessedVars(accessType = { AccessType.WRITE }, vars = { "var1" })
-    @TaskAnnotation(timeLimit = 9, wcet = 6 , startTime = 0)
+    @TaskAnnotation(timeLimit = 9, wcet = 7 , startTime = 0)
 	@Semantique
     public void incremente () {
             try {
@@ -81,7 +81,7 @@ implements ProviderI{
     }
     
 	@AccessedVars(accessType = { AccessType.READ }, vars = { "var1" })
-    @TaskAnnotation(timeLimit = 9, wcet = 3 , startTime = 0)
+    @TaskAnnotation(timeLimit = 9, wcet = 7 , startTime = 0)
     public void provide (Object[] params, CompletableFuture<Object> cf) {
             System.out.println("completing the cf");
             int var1 = (int) this.getVars().get("var1");

@@ -37,7 +37,7 @@ public class CVM extends AbstractCVM {
 	public void deploy() throws Exception {
 		
 		provider = new Provider(CVM.PROVIDER_COMPONENT_URI,CVM.URIProviderInboundPortURI,
-								varsP,1);
+								varsP,2);
 		consumer = new Consumer(CVM.CONSUMER_COMPONENT_URI, CVM.URIGetterOutboundPortURI,
 							varsC,1);
 		
