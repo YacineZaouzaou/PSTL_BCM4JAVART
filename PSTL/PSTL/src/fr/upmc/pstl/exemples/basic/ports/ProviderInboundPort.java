@@ -6,6 +6,9 @@ import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.ComponentI;
 import fr.sorbonne_u.components.ports.AbstractInboundPort;
 import fr.upmc.pstl.AbstractComponentRT;
+import fr.upmc.pstl.TaskCommand;
+import fr.upmc.pstl.Tasks.Provide;
+import fr.upmc.pstl.exemples.basic.components.Provider;
 import fr.upmc.pstl.exemples.basic.interfaces.ProviderI;
 
 public class ProviderInboundPort 
@@ -24,7 +27,8 @@ implements ProviderI {
 				new AbstractComponent.AbstractService<CompletableFuture>()  { 
 					@Override public CompletableFuture call() throws Exception 
 					{ 
-						provider.provide(params, cf) ; 
+						TaskCommand task = new Provide ((Provider)provider ,params , cf);
+						((AbstractComponentRT) provider).addCall(task);
 						return cf; 
 						} 
 					});

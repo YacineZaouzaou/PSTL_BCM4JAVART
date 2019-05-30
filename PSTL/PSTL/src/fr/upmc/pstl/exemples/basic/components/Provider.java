@@ -2,9 +2,9 @@ package fr.upmc.pstl.exemples.basic.components;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 import fr.sorbonne_u.components.annotations.OfferedInterfaces;
-import fr.sorbonne_u.components.exceptions.ComponentShutdownException;
 import fr.sorbonne_u.components.exceptions.ComponentStartException;
 import fr.upmc.pstl.AbstractComponentRT;
 import fr.upmc.pstl.annotations.AccessType;
@@ -57,13 +57,9 @@ implements ProviderI{
 		try  {
 			super.scheduler_multi_thread(this);
 		}catch (SchedulingException e) {
-			try {
-				this.shutdown();
-			} catch (ComponentShutdownException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+			for (ScheduledThreadPoolExecutor exe : executors) {
+				exe.shutdownNow();
 			}
-			e.printStackTrace();
 		}
 	}
 	
@@ -81,9 +77,9 @@ implements ProviderI{
     }
     
 	@AccessedVars(accessType = { AccessType.READ }, vars = { "var1" })
-    @TaskAnnotation(timeLimit = 13, wcet = 7 , startTime = 0)
+    @TaskAnnotation(timeLimit = 14, wcet = 7 , startTime = 0)
     public void provide (Object[] params, CompletableFuture<Object> cf) {
-            System.out.println("completing the cf");
+            System.out.println("completing the cf by : "+this+" with thread "+Thread.currentThread());
             int var1 = (int) this.getVars().get("var1");
             System.out.flush();
             cf.complete(var1);

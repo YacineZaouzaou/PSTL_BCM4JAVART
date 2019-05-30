@@ -37,6 +37,8 @@ public abstract class AbstractComponentRT extends AbstractComponent
 	protected List<TaskCommand> to_execute; 
 	protected List<ScheduledThreadPoolExecutor> executors;
 	
+	public boolean arret = false;
+	
 	public AbstractComponentRT(String uri, Map<String , Object> vars, int nbThreads) {
 		super(uri,nbThreads,1);
 		this.vars = vars;
@@ -543,6 +545,7 @@ public abstract class AbstractComponentRT extends AbstractComponent
 	}
 	
 	
+	
 	private void alterAnnotationValue (	Method m ,
 										String [] vars ,
 										AccessType[] type, 
@@ -570,6 +573,7 @@ public abstract class AbstractComponentRT extends AbstractComponent
             Field memberValue_field_VarAnnotation = handler_VarAnnotation.getClass().getDeclaredField("memberValues");
             memberValue_field_VarAnnotation.setAccessible(true);
             Map <String , Object> memeberValues_map_VarAnnotation = (Map<String , Object>) memberValue_field_VarAnnotation.get(handler_VarAnnotation);
+            
             memeberValues_map_VarAnnotation.put("vars", vars);
             memeberValues_map_VarAnnotation.put("accessType", type);
             
@@ -721,14 +725,6 @@ public abstract class AbstractComponentRT extends AbstractComponent
 			}
 		}
 		return s;
-	}
-	
-	/**
-	 * inutil
-	 */
-	private List<List<TaskCommand>> fix_start_time (List<List<TaskCommand>> lists) {
-		// ici utiliser java reflect
-		return null;
 	}
 	
 	

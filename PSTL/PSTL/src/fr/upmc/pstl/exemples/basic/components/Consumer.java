@@ -16,7 +16,7 @@ import fr.upmc.pstl.exceptions.SchedulingException;
 import fr.upmc.pstl.exemples.basic.interfaces.ConsumerI;
 import fr.upmc.pstl.exemples.basic.ports.ConsumerOutBoundPort;
 
-@CyclePeriod(period = 15)
+@CyclePeriod(period = 1500)
 @RequiredInterfaces(required = {ConsumerI.class})
 public class Consumer 
 extends AbstractComponentRT{
@@ -82,7 +82,11 @@ extends AbstractComponentRT{
             try {
                     this.getUriGetterPort().get(null, cf);
                     System.out.println("trying to print");
-                    System.out.println("getting value "+(Integer) cf.get());
+                    if (cf.isDone()) {
+                    	System.out.println("getting value "+(Integer) cf.get());
+                    }else {
+                    	System.out.println("not done yet");
+                    }
                     System.out.flush();
             } catch (Exception e) {
                     // TODO Auto-generated catch block
