@@ -73,23 +73,21 @@ extends AbstractComponentRT{
 		}
 	}
 	
+
+    CompletableFuture<Object> cf = new CompletableFuture<>();
 	
 	@AccessedVars(accessType = { AccessType.WRITE }, vars = { "var2" })
     @TaskAnnotation(timeLimit = 9, wcet = 3 , startTime = 0)
 	@Semantique
     public void get () {
-            CompletableFuture<Object> cf = new CompletableFuture<>();
             try {
                     this.getUriGetterPort().get(null, cf);
                     System.out.println("trying to print");
-                    if (cf.isDone()) {
+                    if (cf.isDone()) 
                     	System.out.println("getting value "+(Integer) cf.get());
-                    }else {
-                    	System.out.println("not done yet");
-                    }
+                    
                     System.out.flush();
             } catch (Exception e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
             }
             
