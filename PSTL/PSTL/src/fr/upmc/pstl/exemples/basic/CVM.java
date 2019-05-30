@@ -72,7 +72,7 @@ public class CVM extends AbstractCVM {
 		CVM cvm = new CVM();
 		cvm.deploy();
 		cvm.start();
-		Thread.sleep(5000);
+//		Thread.sleep(5000);
 //		cvm.shutdown();
 //		System.exit(0);
 	}

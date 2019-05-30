@@ -14,7 +14,7 @@ import fr.upmc.pstl.annotations.TaskAnnotation;
 import fr.upmc.pstl.exemples.basic.interfaces.ConsumerI;
 import fr.upmc.pstl.exemples.basic.ports.ConsumerOutBoundPort;
 
-@CyclePeriod(period = 2000)
+@CyclePeriod(period = 15)
 @RequiredInterfaces(required = {ConsumerI.class})
 public class Consumer 
 extends AbstractComponentRT{
@@ -26,7 +26,7 @@ extends AbstractComponentRT{
 			String consumerPortURI,
 			Map<String,Object> vars) throws Exception
 	{
-		super(uri,vars);
+		super(uri,vars,1);
 		
 		
 		this.uriGetterPort = new ConsumerOutBoundPort(consumerPortURI, this);

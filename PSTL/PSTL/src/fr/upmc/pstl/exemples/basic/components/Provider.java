@@ -18,7 +18,7 @@ import fr.upmc.pstl.annotations.TaskAnnotation;
 import fr.upmc.pstl.exemples.basic.interfaces.ProviderI;
 import fr.upmc.pstl.exemples.basic.ports.ProviderInboundPort;
 
-@CyclePeriod(period = 1000)
+@CyclePeriod(period = 15)
 @OfferedInterfaces(offered = {ProviderI.class})
 public class Provider 
 extends AbstractComponentRT 
@@ -32,7 +32,7 @@ implements ProviderI{
 			String providerportURI, 
 			Map<String,Object> vars) throws Exception
 	{
-		super(uri,vars);
+		super(uri,vars,1);
 		
 		
 		this.uriGetterPort = new ProviderInboundPort(providerportURI, this);
@@ -60,7 +60,7 @@ implements ProviderI{
 	
 	
 	@AccessedVars(accessType = { AccessType.WRITE }, vars = { "var1" })
-    @TaskAnnotation(timeLimit = 9, wcet = 3 , startTime = 0)
+    @TaskAnnotation(timeLimit = 9, wcet = 6 , startTime = 0)
 	@Semantique
     public void incremente () {
             try {
@@ -69,7 +69,6 @@ implements ProviderI{
             } catch (Exception e) {
                     e.printStackTrace();
             }
-            
     }
     
 	@AccessedVars(accessType = { AccessType.READ }, vars = { "var1" })

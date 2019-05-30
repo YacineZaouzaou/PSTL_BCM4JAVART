@@ -5,11 +5,13 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -35,16 +37,14 @@ public abstract class AbstractComponentRT extends AbstractComponent
 	protected List<Map<Method , Long>> tasks_list;
 	protected List<TaskCommand> to_execute; 
 	protected List<ScheduledThreadPoolExecutor> executors;
-	protected int Number_of_thread;
 	
-	public AbstractComponentRT(String uri, Map<String , Object> vars) {
-		super(uri,1,0);
+	public AbstractComponentRT(String uri, Map<String , Object> vars, int nbThreads) {
+		super(uri,nbThreads,1);
 		this.vars = vars;
 		this.to_execute = new ArrayList<TaskCommand>();
 		this.executors = new ArrayList<>();
-		this.Number_of_thread = 1;
-		for (int i = 0 ; i < this.Number_of_thread ; i ++) {
-			this.executors.add(new ScheduledThreadPoolExecutor(1));
+		for (int i = 0 ; i < super.nbThreads ; i ++) {
+			this.executors.add(new ScheduledThreadPoolExecutor(super.nbSchedulableThreads));
 		}
 	}
 	
@@ -56,10 +56,19 @@ public abstract class AbstractComponentRT extends AbstractComponent
 		this.vars.put(varName, newVal);
 	}
 	
+	
+	/**
+	 * ajoute une tache a la liste des taches a executer
+	 * @param task la tache a ajouter
+	 */
 	public void addCall(ICommand task) {
 		this.to_execute.add((TaskCommand) task);
 	}
 	
+	/**
+	 * recupere la prochaine tâche dans la liste d'attente
+	 * @return une reference vers la prochaine tache ou null si pas de taches
+	 */
 	protected TaskCommand getNextTask() {
 		if(to_execute.size()>0) {
 			TaskCommand curr = this.to_execute.get(0);
@@ -69,18 +78,19 @@ public abstract class AbstractComponentRT extends AbstractComponent
 	}
 	
 	
-	
-	
+	/**
+	 * cherche un ordonnoncement sur le plus petit nombre de threads possible et lève une exception si pas d'ordonnoncement 
+	 * @param r référence vers le composant à ordonnoncer
+	 * @return liste de listes 
+	 */
 	protected final List<Map<Method , Long>> scheduler_multi_thread (AbstractComponentRT r) {
 		
 		
 		this.tasks_list = new ArrayList<Map<Method , Long>>();
 		// looking for semantic task ?!
 		List<Method> tasks = getAllMethodsAsList(r);
-
 		
-		
-		for (int i = 1 ; i <= this.Number_of_thread ; i ++) {
+		for (int i = 1 ; i <= super.nbThreads ; i ++) {
 			try {
 				List<List<Method>> lists = split_list_task(tasks, i);
 
@@ -119,8 +129,94 @@ public abstract class AbstractComponentRT extends AbstractComponent
 	
 	}
 	
+	/**
+	 * Vérifie l'existence de lectures avant écritures et d'éxclusions mutuelles non respéctées entre les sous-listes
+	 * @return Correspondance entre une méthode et une liste d'autres méthodes avec lesquelles elle forme une violation des contraintes  
+	 */
+	protected Map<Method,Map<String,List<Method>>> checkConstraints( List<Map<Method,Long>> tasks ) {
+
+		Map<Method,Map<String,List<Method>>> rel = new HashMap<Method, Map<String,List<Method>>>();
+
+		for(int i=0; i<tasks.size(); i++) {
+			Map<Method,Long> mapi = tasks.get(i);
+			for(Map.Entry<Method, Long> mi : mapi.entrySet() ) {
+				Set<String> s1read =  new HashSet<String>();
+				Set<String> s1write =  new HashSet<String>();
+				AccessType[] typesI = mi.getKey().getAnnotation(AccessedVars.class).accessType();
+				for(int a=0; a<typesI.length; a++) {
+					if(typesI[a]==AccessType.READ || typesI[a]==AccessType.BOTH)
+						s1read.add(mi.getKey().getAnnotation(AccessedVars.class).vars()[a]);
+					if(typesI[a]==AccessType.WRITE || typesI[a]==AccessType.BOTH)
+						s1write.add(mi.getKey().getAnnotation(AccessedVars.class).vars()[a]);
+				}
+
+				for(int j=0; i<tasks.size(); j++) {
+					if(i!=j) {
+						Map<Method,Long> mapj = tasks.get(j);
+						for(Map.Entry<Method, Long> mj : mapj.entrySet() ) {
+							Set<String> s2read =  new HashSet<String>();
+							Set<String> s2write =  new HashSet<String>();
+							AccessType[] typesJ = mj.getKey().getAnnotation(AccessedVars.class).accessType();
+							for(int a=0; a<typesJ.length; a++) {
+								if(typesJ[a]==AccessType.READ || typesJ[a]==AccessType.BOTH)
+									s2read.add(mj.getKey().getAnnotation(AccessedVars.class).vars()[a]);
+								if(typesJ[a]==AccessType.WRITE || typesJ[a]==AccessType.BOTH)
+									s2write.add(mj.getKey().getAnnotation(AccessedVars.class).vars()[a]);
+							}
+
+							Set<String> intersectionRead = new HashSet<String>(s1read); intersectionRead.retainAll(s2write);
+							if(! intersectionRead.isEmpty()) {
+								long start1 = mi.getValue();
+								long start2 = mj.getValue();
+								int wcet = (int) mj.getKey().getAnnotation(TaskAnnotation.class).wcet(); 
+								if(start1 < start2+wcet) { //lecture avant ecriture
+									if(rel.containsKey(mi.getKey()))
+										if(rel.get(mi.getKey()).containsKey("read"))
+											rel.get(mi.getKey()).get("read").add(mj.getKey());
+										else {
+											List<Method> l = new ArrayList<Method>(); l.add(mj.getKey());
+											rel.get(mi.getKey()).put("read", l);
+										}
+									else {
+										List<Method> l = new ArrayList<Method>(); l.add(mj.getKey());
+										Map<String,List<Method>> read = new HashMap<String, List<Method>>(); read.put("read", l);
+										rel.put(mi.getKey(), read);
+									}
+								}
+							}
+
+							Set<String> intersectionWrite = new HashSet<String>(s1write); intersectionWrite.retainAll(s2write);
+							if(! intersectionWrite.isEmpty()) {
+								long start1 = mi.getValue();
+								long start2 = mj.getValue();
+								int wcet = (int) mj.getKey().getAnnotation(TaskAnnotation.class).wcet(); 
+								if(start1 > start2 && start1 <wcet) { //ecriture de la même variable au même moment par deux tâches
+									if(rel.containsKey(mi.getKey()))
+										if(rel.get(mi.getKey()).containsKey("write"))
+											rel.get(mi.getKey()).get("write").add(mj.getKey());
+										else {
+											List<Method> l = new ArrayList<Method>(); l.add(mj.getKey());
+											rel.get(mi.getKey()).put("write", l);
+										}
+									else {
+										List<Method> l = new ArrayList<Method>(); l.add(mj.getKey());
+										Map<String,List<Method>> read = new HashMap<String, List<Method>>(); read.put("write", l);
+										rel.put(mi.getKey(), read);
+									}
+								}
+							}
+						}
+					}
+
+				}
+			}
+
+		}
+		return rel;
+	}
 	
 
+	
 	protected final Map<Method , Long>  scheduler (AbstractComponentRT r , List<Method> tasks) throws  TimeException,
 																				PrecedanceException, 
 																				CircularityException, 
@@ -268,9 +364,9 @@ public abstract class AbstractComponentRT extends AbstractComponent
 					throw new SchedulingException("impossible to schedul on one thread ");
 			}
 			
-			for(Method t : ord.keySet()) {
-				System.out.println(t);
-			}
+//			for(Method t : ord.keySet()) {
+//				System.out.println(t);
+//			}
 			
 			return ord;
 	}
@@ -285,8 +381,8 @@ public abstract class AbstractComponentRT extends AbstractComponent
 	
 	
 	/**
-	 * used to create as many as possible of executeCallTasks
-	 * @return all executeCallTasks created
+	 * crée la liste des ExecuteCallTasks
+	 * @return liste des ExecuteCallTasks créés
 	 * @throws SecurityException 
 	 * @throws NoSuchMethodException 
 	 */
@@ -431,7 +527,7 @@ public abstract class AbstractComponentRT extends AbstractComponent
 	protected static boolean  checkPossibility (Map<Method , Long> list , long cycle_of_component) {
 		MethodComparator tc = new MethodComparator();
 		for (Map.Entry<Method , Long> e1 : list.entrySet()) {
-			if ((e1.getValue() + ((TaskAnnotation) e1.getKey().getAnnotation(TaskAnnotation.class)).wcet()) > cycle_of_component) {
+			if ((e1.getValue() + ((TaskAnnotation) e1.getKey().getAnnotation(TaskAnnotation.class)).wcet()) > e1.getKey().getAnnotation(TaskAnnotation.class).timeLimit()) {
 				return false;
 			}
 			for (Map.Entry<Method , Long> e2 : list.entrySet()) {
@@ -475,9 +571,6 @@ public abstract class AbstractComponentRT extends AbstractComponent
 		}
 		return methods;
 	}
-	
-	
-	// last added 
 	
 	
 	public List<List<Method>> split_list_task (List<Method> list , int nb_of_lists) {

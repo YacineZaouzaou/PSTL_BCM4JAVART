@@ -6,6 +6,6 @@
 	<classpathentry exported="true" kind="lib" path="src/lib/commons-math3-3.5.jar"/>
 	<classpathentry exported="true" kind="lib" path="src/lib/javassist.jar"/>
 	<classpathentry exported="true" kind="lib" path="src/lib/jcip-annotations.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/java-8-oracle"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/java-8-oracle"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
