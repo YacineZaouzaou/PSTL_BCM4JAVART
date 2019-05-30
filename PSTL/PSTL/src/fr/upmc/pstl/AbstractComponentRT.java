@@ -87,36 +87,29 @@ public abstract class AbstractComponentRT extends AbstractComponent
 	 * @param r référence vers le composant à ordonnoncer
 	 * @return liste de listes 
 	 */
-	protected final List<Map<Method , Long>> scheduler_multi_thread (AbstractComponentRT r) throws SchedulingException{
-		
+	protected final List<Map<Method , Long>> scheduler_multi_thread (AbstractComponentRT r){
 		
 		this.tasks_list = new ArrayList<Map<Method , Long>>();
-		// looking for semantic task ?!
+		
 		List<Method> tasks = getAllMethodsAsList(r);
 		
 		for (int i = 1 ; i <= super.nbThreads ; i ++) {
 			try {
 				List<List<Method>> lists = split_list_task(tasks, i);
-				System.out.println("i "+i);
-				for (List l : lists) {
-					this.tasks_list.add(this.scheduler(r, l));	
-				}
 				
+				for (List l : lists) 
+					this.tasks_list.add(this.scheduler(r, l));
 				
 				Map<Method , Map<String , List<Method>>> errors = checkConstraints(tasks_list);
 				
-				if (errors.size() == 0) {
+				if (errors.size() == 0) 
 					return tasks_list;
-				}
-				
 				
 				tasks_list = redoScheduling(r, errors, tasks_list);
-				if (tasks_list == null) {
-					throw new SchedulingException("impossible to find a schedul");
-				}
+				if (tasks_list == null) 
+					throw new SchedulingException("Impossible to find a scheduling");
 				
 				return tasks_list;
-
 
 			} catch (TimeException 
 					| PrecedanceException 
@@ -127,8 +120,11 @@ public abstract class AbstractComponentRT extends AbstractComponent
 				this.tasks_list = new ArrayList<Map<Method , Long>>();
 			}
 		}
-		throw new SchedulingException("impossible to schedul");
-	
+		System.err.println("No scheduling possible for the component : "+this);
+		for (ScheduledThreadPoolExecutor exe : executors) {
+			exe.shutdownNow();
+		}
+		return tasks_list;
 	}
 	
 	
@@ -576,9 +572,6 @@ public abstract class AbstractComponentRT extends AbstractComponent
             
             memeberValues_map_VarAnnotation.put("vars", vars);
             memeberValues_map_VarAnnotation.put("accessType", type);
-            
-            System.out.println("var "+vars[0]);
-            
 		} catch (Exception  e) {
 			e.printStackTrace();
 		} 
@@ -729,7 +722,6 @@ public abstract class AbstractComponentRT extends AbstractComponent
 	
 	
 	public void cycle () throws Exception {
-		System.out.println("cycle is launched");
 		long cycle_time = ((CyclePeriod) this.getClass().getAnnotation(CyclePeriod.class)).period();
 
 		for (Map<Method , Long> i : this.tasks_list) {
