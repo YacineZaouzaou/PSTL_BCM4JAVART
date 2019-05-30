@@ -5,6 +5,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -76,6 +77,9 @@ public abstract class AbstractComponentRT extends AbstractComponent
 	}
 	
 
+	
+	
+	
 	/**
 	 * cherche un ordonnoncement sur le plus petit nombre de threads possible et lève une exception si pas d'ordonnoncement 
 	 * @param r référence vers le composant à ordonnoncer
@@ -124,6 +128,11 @@ public abstract class AbstractComponentRT extends AbstractComponent
 		throw new SchedulingException("impossible to schedul");
 	
 	}
+	
+	
+	
+	
+	
 	
 	protected List<Map<Method, Long>> redoScheduling (AbstractComponentRT r , 
 			Map<Method , Map<String ,
@@ -206,8 +215,13 @@ public abstract class AbstractComponentRT extends AbstractComponent
 		return null;
 	}
 	
+	
+	
+	
+	
+	
 	/**
-	 * Vérifie l'existence de lectures avant écritures et d'éxclusions mutuelles non respéctées entre les sous-listes
+	 * Vérifie l'existence de lectures avant ecritures et d'exclusions mutuelles non respéctées entre les sous-listes
 	 * @return Correspondance entre une méthode et une liste d'autres méthodes avec lesquelles elle forme une violation des contraintes  
 	 */
 	protected Map<Method,Map<String,List<Method>>> checkConstraints( List<Map<Method,Long>> tasks ) {
@@ -243,6 +257,7 @@ public abstract class AbstractComponentRT extends AbstractComponent
 
 							Set<String> intersectionRead = new HashSet<String>(s1read); intersectionRead.retainAll(s2write);
 							if(! intersectionRead.isEmpty()) {
+								System.out.println(Arrays.asList("intersection "+intersectionRead).get(0));
 								long start1 = mi.getValue();
 								long start2 = mj.getValue();
 								int wcet = (int) mj.getKey().getAnnotation(TaskAnnotation.class).wcet(); 
@@ -555,8 +570,10 @@ public abstract class AbstractComponentRT extends AbstractComponent
             Field memberValue_field_VarAnnotation = handler_VarAnnotation.getClass().getDeclaredField("memberValues");
             memberValue_field_VarAnnotation.setAccessible(true);
             Map <String , Object> memeberValues_map_VarAnnotation = (Map<String , Object>) memberValue_field_VarAnnotation.get(handler_VarAnnotation);
-            memeberValues_map_TaskAnnotation.put("vars", vars);
-            memeberValues_map_TaskAnnotation.put("accessType", type);
+            memeberValues_map_VarAnnotation.put("vars", vars);
+            memeberValues_map_VarAnnotation.put("accessType", type);
+            
+            System.out.println("var "+vars[0]);
             
 		} catch (Exception  e) {
 			e.printStackTrace();
