@@ -100,7 +100,7 @@ public abstract class AbstractComponentRT extends AbstractComponent
 				}
 				
 				
-				Map<Method , Map<String , List<Method>>> errors = checkWriteThenRead(tasks_list);
+				Map<Method , Map<String , List<Method>>> errors = checkConstraints(tasks_list);
 				
 				if (errors.size() == 0) {
 					return tasks_list;
@@ -183,7 +183,7 @@ public abstract class AbstractComponentRT extends AbstractComponent
 				Map <Method , Long> tasks = this.scheduler(r, new ArrayList(list.keySet()));
 				ordre.remove(list);
 				ordre.add(tasks);
-				if (checkWriteThenRead(ordre).size() == 0) {
+				if (checkConstraints(ordre).size() == 0) {
 					return ordre;
 				}
 			}catch (Exception | TimeException | PrecedanceException exception /* which exception ? */) {
@@ -191,10 +191,6 @@ public abstract class AbstractComponentRT extends AbstractComponent
 				exception.printStackTrace();
 			}
 		}
-		return null;
-	}
-	
-	protected Map <Method , Map<String , List<Method>>> checkWriteThenRead (List<Map<Method, Long>> tasks) {
 		return null;
 	}
 	
