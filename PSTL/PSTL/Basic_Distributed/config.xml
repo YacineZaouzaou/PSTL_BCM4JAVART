@@ -1,0 +1,19 @@
+<deployment>
+   <hosts>
+    <host name="localhost"
+          dir="/home/zineddine/PSTL_BCMRT/PSTL_BCM4JAVART/PSTL/PSTL/Basic_Distributed/"/>
+  </hosts>
+  <cyclicBarrier   hostname="localhost" port="55253"/>
+  <globalRegistry  hostname="localhost" port="55252"/>
+  <rmiRegistryPort no="55999"/>
+  <jvms2hostnames>
+    <jvm2hostname jvmuri="provider"
+        rmiRegistryCreator="true"
+        hostname="localhost"
+        mainclass="fr.upmc.pstl.exemples.basic.DistributedCVMRT"/>
+    <jvm2hostname jvmuri="consumer"
+        rmiRegistryCreator="false"
+        	hostname="localhost"
+        mainclass="fr.upmc.pstl.exemples.basic.DistributedCVMRT"/>
+  </jvms2hostnames>
+</deployment>

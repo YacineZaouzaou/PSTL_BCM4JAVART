@@ -1,5 +1,7 @@
 package fr.upmc.pstl.exemples.basic;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.util.concurrent.CompletableFuture;
 
 import fr.sorbonne_u.components.connectors.AbstractConnector;
@@ -14,7 +16,5 @@ implements ConsumerI {
 	public void get(Object[] params, CompletableFuture<Object> cf) throws Exception {
 		((ProviderI) this.offering).provide(params, cf);
 	}
-	
-	
 	
 }

@@ -24,14 +24,9 @@ public class CVM extends AbstractCVM {
 		super();
 	}
 	
-	protected ArrayList<TaskCommand> tasksP = new ArrayList<TaskCommand>();
-	protected ArrayList<TaskCommand> tasksC = new ArrayList<TaskCommand>();
 	protected Map<String,Object> varsP = new HashMap<String,Object>();
 	protected Map<String,Object> varsC = new HashMap<String,Object>();
-	protected TaskCommand t1 ;//= new Incremente(provider,null,null); // Incremente la variable
-	protected TaskCommand t2 ;//= new Provide(provider,null,null); // get la variable
-	protected TaskCommand t3;// = new Get(consumer,null,null); // appel 
-	protected int var1,var2;//,var3,var4;
+	protected int var1,var2;
 	
 	
 	public void deploy() throws Exception {
@@ -41,22 +36,25 @@ public class CVM extends AbstractCVM {
 		consumer = new Consumer(CVM.CONSUMER_COMPONENT_URI, CVM.URIGetterOutboundPortURI,
 							varsC,1);
 		
-		
-//		t1 = new Incremente(provider,null,null); // Incremente la variable
-//		t2 = new Provide(provider,null,null); // get la variable
-//		t3 = new Get(consumer,null,null);
-		
-//		tasksP.add(t1); tasksP.add(t2); tasksC.add(t3);
 		varsP.put("var1",var1); varsC.put("var2",var2);				
 		
 		this.deployedComponents.add(provider);
 		this.deployedComponents.add(consumer);
+		
+
+		this.provider.toggleTracing() ;
+		this.provider.toggleLogging() ;
+
+		this.consumer.toggleTracing() ;
+		this.consumer.toggleLogging() ;
+		
 		
 		consumer.doPortConnection(
 				URIGetterOutboundPortURI, 
 				URIProviderInboundPortURI, ServiceConnector.class.getCanonicalName());
 		
 		super.deploy();
+		assert this.deploymentDone();
 	}
 	
 	public void shutdown() throws Exception{
@@ -65,10 +63,9 @@ public class CVM extends AbstractCVM {
 
 	public static void main(String[] args) throws Exception {
 		CVM cvm = new CVM();
-		cvm.deploy();
-		cvm.start();
-//		Thread.sleep(5000);
-//		cvm.shutdown();
-//		System.exit(0);
+		cvm.startStandardLifeCycle(20000L) ;
+		Thread.sleep(15000);
+		cvm.shutdown();
+		System.exit(0);
 	}
 }

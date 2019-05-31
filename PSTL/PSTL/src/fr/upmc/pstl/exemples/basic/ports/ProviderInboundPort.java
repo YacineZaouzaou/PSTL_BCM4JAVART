@@ -7,7 +7,7 @@ import fr.sorbonne_u.components.ComponentI;
 import fr.sorbonne_u.components.ports.AbstractInboundPort;
 import fr.upmc.pstl.AbstractComponentRT;
 import fr.upmc.pstl.TaskCommand;
-import fr.upmc.pstl.Tasks.Provide;
+import fr.upmc.pstl.TaskCommands.Provide;
 import fr.upmc.pstl.exemples.basic.components.Provider;
 import fr.upmc.pstl.exemples.basic.interfaces.ProviderI;
 
@@ -20,13 +20,16 @@ implements ProviderI {
 	}
 
 	@Override
-	public void provide(Object[] params, CompletableFuture<Object> cf) throws Exception{
+	public void provide(Object[] params, CompletableFuture<Object> cf) throws Exception {
+		
 		final ProviderI provider = (ProviderI) this.getOwner();
-//		provider.provide(params, cf);
+		
+		// appel asynchrone car l'appellant est un composant temps réel
 		((AbstractComponentRT)provider).handleRequestAsync( 
 				new AbstractComponent.AbstractService<CompletableFuture>()  { 
 					@Override public CompletableFuture call() throws Exception 
 					{ 
+						// creation de la commande a ajouter
 						TaskCommand task = new Provide ((Provider)provider ,params , cf);
 						((AbstractComponentRT) provider).addCall(task);
 						return cf; 

@@ -4,7 +4,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import fr.sorbonne_u.components.annotations.RequiredInterfaces;
-import fr.sorbonne_u.components.exceptions.ComponentShutdownException;
+import fr.sorbonne_u.components.cvm.AbstractCVM;
 import fr.sorbonne_u.components.exceptions.ComponentStartException;
 import fr.upmc.pstl.AbstractComponentRT;
 import fr.upmc.pstl.annotations.AccessType;
@@ -12,7 +12,6 @@ import fr.upmc.pstl.annotations.AccessedVars;
 import fr.upmc.pstl.annotations.CyclePeriod;
 import fr.upmc.pstl.annotations.Semantique;
 import fr.upmc.pstl.annotations.TaskAnnotation;
-import fr.upmc.pstl.exceptions.SchedulingException;
 import fr.upmc.pstl.exemples.basic.interfaces.ConsumerI;
 import fr.upmc.pstl.exemples.basic.ports.ConsumerOutBoundPort;
 
@@ -36,8 +35,13 @@ extends AbstractComponentRT{
 		
 		this.addPort(this.uriGetterPort);
 		
-		this.uriGetterPort.publishPort();
+		this.uriGetterPort.localPublishPort() ;
 		
+		if (AbstractCVM.isDistributed) {
+			this.executionLog.setDirectory(System.getProperty("user.dir")) ;
+		} else {
+			this.executionLog.setDirectory(System.getProperty("user.home")) ;
+		}
 		
 	}
 		
@@ -48,7 +52,7 @@ extends AbstractComponentRT{
 	
 	
 	public void start() throws ComponentStartException {
-		System.out.println("starting : "+this);
+		this.logMessage("starting : "+this.getClass().getSimpleName());
 		super.start();
 		super.scheduler_multi_thread(this);
 		try {
@@ -65,45 +69,24 @@ extends AbstractComponentRT{
 	@AccessedVars(accessType = { AccessType.WRITE }, vars = { "var2" })
     @TaskAnnotation(timeLimit = 9, wcet = 3 , startTime = 0)
 	@Semantique
-    public void get () {
+    public void get ()  {
             try {
             	if (first) {
             		first = false;
-                    this.getUriGetterPort().get(null, cf);
-
+                    this.uriGetterPort.get(null, cf);
             	}
             	if (cf.isDone()) {
-            		System.out.println("getting value "+(Integer) cf.get());
+            		this.logMessage("getting value "+(Integer) cf.get());
             		cf = new CompletableFuture<>();
-                    this.getUriGetterPort().get(null, cf);
+                    this.uriGetterPort.get(null, cf);
                     
-            	}else {
-            		System.out.println("no response from provider");
             	}
-                    System.out.flush();
-            } catch (Exception e) {
-                    e.printStackTrace();
+            	
+            } catch (Exception e) {	
+            	this.logMessage(e.getMessage()+" "+e.getCause());
+                e.printStackTrace();
             }
             
     }
-	
-//	@AccessedVars(accessType = { AccessType.WRITE }, vars = { "var2" })
-//    @TaskAnnotation(timeLimit = 9, wcet = 3 , startTime = 0)
-//	@Semantique
-//    public void get () {
-//            try {
-//            	CompletableFuture<Object> cf = new CompletableFuture<>();
-//            	this.getUriGetterPort().get(null, cf);
-//                    System.out.println("trying to print");
-//            		System.out.println("getting value "+(Integer) cf.get());
-//                    
-//            } catch (Exception e) {
-//                    // TODO Auto-generated catch block
-//                    e.printStackTrace();
-//            }
-//            
-//    }
-
-
 
 }

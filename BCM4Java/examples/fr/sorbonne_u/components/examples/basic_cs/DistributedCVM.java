@@ -263,7 +263,9 @@ extends		AbstractDistributedCVM
 	{
 		try {
 			DistributedCVM da  = new DistributedCVM(args, 2, 5) ;
+			System.out.println("***************DCVM");
 			da.startStandardLifeCycle(15000L) ;
+			System.out.println("***************DCVM");
 			Thread.sleep(10000L) ;
 			System.exit(0) ;
 		} catch (Exception e) {

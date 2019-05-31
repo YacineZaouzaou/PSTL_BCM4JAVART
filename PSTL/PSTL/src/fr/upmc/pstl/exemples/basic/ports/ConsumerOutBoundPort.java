@@ -16,7 +16,9 @@ implements ConsumerI {
 
 	@Override
 	public void get(Object[] params, CompletableFuture<Object> cf) throws Exception{
-		((ConsumerI) this.connector).get(params, cf);
+		
+	    ((ConsumerI) this.connector).get(params, cf);
+	    
 	}
 
 }

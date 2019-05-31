@@ -42,6 +42,7 @@ import fr.sorbonne_u.components.cvm.AbstractCVM;
 import fr.sorbonne_u.components.examples.basic_cs.interfaces.URIConsumerI;
 import fr.sorbonne_u.components.examples.basic_cs.ports.URIConsumerOutboundPort;
 import fr.sorbonne_u.components.exceptions.ComponentStartException;
+import fr.upmc.pstl.AbstractComponentRT;
 
 //-----------------------------------------------------------------------------
 /**

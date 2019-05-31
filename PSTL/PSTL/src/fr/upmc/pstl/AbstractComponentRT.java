@@ -2,6 +2,7 @@ package fr.upmc.pstl;
 
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
@@ -37,8 +38,13 @@ public abstract class AbstractComponentRT extends AbstractComponent
 	protected List<TaskCommand> to_execute; 
 	protected List<ScheduledThreadPoolExecutor> executors;
 	
-	public boolean arret = false;
 	
+	/**
+	 * cree un composant temps reel 
+	 * @param uri 			Uri du composant
+	 * @param vars 			Variables du composant
+	 * @param nbThreads 	Nombre de threads disponibles
+	 */
 	public AbstractComponentRT(String uri, Map<String , Object> vars, int nbThreads) {
 		super(uri,nbThreads,1);
 		this.vars = vars;
@@ -49,10 +55,19 @@ public abstract class AbstractComponentRT extends AbstractComponent
 		}
 	}
 	
+	/**
+	 * recupere la liste des variables du composant
+	 * @return liste des variables
+	 */
 	public Map<String,Object> getVars(){
 		return this.vars;
 	}
 	
+	/**
+	 * modifie une variable au composant
+	 * @param varName nom de la variale
+	 * @param newVal valeur de la variable
+	 */
 	public void setVar(String varName, Object newVal){
 		this.vars.put(varName, newVal);
 	}
@@ -77,18 +92,20 @@ public abstract class AbstractComponentRT extends AbstractComponent
 			return curr;
 		} return null;
 	}
-	
 
 	
+	
+	
+	///  Debut du scheduler  ///
 	
 	
 	/**
 	 * cherche un ordonnoncement sur le plus petit nombre de threads possible et lève une exception si pas d'ordonnoncement 
 	 * @param r référence vers le composant à ordonnoncer
-	 * @return liste de listes 
+	 * @return ordonnoncement obtenu
 	 */
-	protected final List<Map<Method , Long>> scheduler_multi_thread (AbstractComponentRT r){
-		
+	protected final List<Map<Method , Long>> scheduler_multi_thread (AbstractComponentRT r)
+	{	
 		this.tasks_list = new ArrayList<Map<Method , Long>>();
 		
 		List<Method> tasks = getAllMethodsAsList(r);
@@ -96,19 +113,21 @@ public abstract class AbstractComponentRT extends AbstractComponent
 		for (int i = 1 ; i <= super.nbThreads ; i ++) {
 			try {
 				List<List<Method>> lists = split_list_task(tasks, i);
-				
-				for (List l : lists) 
+
+				for (List l : lists) {
 					this.tasks_list.add(this.scheduler(r, l));
-				
+				}
+
 				Map<Method , Map<String , List<Method>>> errors = checkConstraints(tasks_list);
-				
-				if (errors.size() == 0) 
+
+				if (errors.size() == 0) {
 					return tasks_list;
+				}
 				
 				tasks_list = redoScheduling(r, errors, tasks_list);
 				if (tasks_list == null) 
 					throw new SchedulingException("Impossible to find a scheduling");
-				
+
 				return tasks_list;
 
 			} catch (TimeException 
@@ -120,7 +139,6 @@ public abstract class AbstractComponentRT extends AbstractComponent
 				this.tasks_list = new ArrayList<Map<Method , Long>>();
 			}
 		}
-		System.err.println("No scheduling possible for the component : "+this);
 		for (ScheduledThreadPoolExecutor exe : executors) {
 			exe.shutdownNow();
 		}
@@ -131,10 +149,15 @@ public abstract class AbstractComponentRT extends AbstractComponent
 	
 	
 	
-	
+	/**
+	 * refait le scheduling en essayant de corriger les erreurs detectees precedement
+	 * @param r			refrence vers le composant a scheduler
+	 * @param errors	erreurs detectees lors du scheduling precedent
+	 * @param ordre		dernier ordonnoncement obtenu
+	 * @return ordonnoncement obtenu
+	 */
 	protected List<Map<Method, Long>> redoScheduling (AbstractComponentRT r , 
-			Map<Method , Map<String ,
-			List<Method>>> errors , 
+			Map<Method , Map<String ,List<Method>>> errors , 
 			List<Map<Method, Long>> ordre) {
 
 
@@ -175,10 +198,6 @@ public abstract class AbstractComponentRT extends AbstractComponent
 									start_after, 
 									((TaskAnnotation) e.getKey().getAnnotation(TaskAnnotation.class)).wcet());
 
-			/**
-			 * TODO
-			 * change annotation on this method for startTime and timeLimit
-			 */
 
 
 			try {
@@ -306,7 +325,18 @@ public abstract class AbstractComponentRT extends AbstractComponent
 	}
 	
 
-	
+	/**
+	 * scheduler mono-thread
+	 * @param r 	composant sur lequel scheduler
+	 * @param tasks	taches a scheduler
+	 * @return	ordonnoncement obtenu
+	 * @throws TimeException
+	 * @throws PrecedanceException
+	 * @throws CircularityException
+	 * @throws SchedulingException
+	 * @throws NoSuchMethodException
+	 * @throws SecurityException
+	 */
 	protected final Map<Method , Long>  scheduler (AbstractComponentRT r , List<Method> tasks) throws  TimeException,
 																				PrecedanceException, 
 																				CircularityException, 
@@ -340,13 +370,15 @@ public abstract class AbstractComponentRT extends AbstractComponent
 				}
 			}
 			
+
 			List<Method> ect_list = createExecuteCallTask( ((CyclePeriod) r.getClass().getAnnotation(CyclePeriod.class)).period() ,
 															semantique_size,
 															longer_time_offered_methods,
 															smallest_time_limite_offered,
 															latest_start_time_offered);
+
 			task_semantique.addAll(ect_list);
-			
+
 			// cas triviaux d'exception
 			long totalTime = 0;
 			Map<String, Map<Method, AccessType>> variables = new HashMap<>();
@@ -354,7 +386,6 @@ public abstract class AbstractComponentRT extends AbstractComponent
 			for (Method task : task_semantique) {
 				TaskAnnotation annotation = (TaskAnnotation) task.getAnnotation(TaskAnnotation.class); 
 				AccessedVars annotationAccess = (AccessedVars) task.getAnnotation(AccessedVars.class);
-
 				if (annotation.timeLimit() - annotation.startTime() <= 0) {
 					throw new TimeException("timeLimite - startTime < 0 in task "+task);
 				}
@@ -375,7 +406,7 @@ public abstract class AbstractComponentRT extends AbstractComponent
 				if (annotation.timeLimit() < annotation.wcet())
 					throw new TimeException("impossible to satisfy "+TaskAnnotation.class+" deadLine");	
 			}
-			
+
 			
 			if (totalTime > r.getClass().getAnnotation(CyclePeriod.class).period())
 				throw new TimeException("period exceeded");
@@ -437,12 +468,19 @@ public abstract class AbstractComponentRT extends AbstractComponent
 				}
 			}else { 
 				ord = this.sched(task_semantique , new HashMap<Method, Long> () , cycle_of_component ,0);
-				if (ord.size() != task_semantique.size())
+				if (ord.size() != task_semantique.size()) {
 					throw new SchedulingException("impossible to schedul on one thread ");
+				}
 			}
+
 			return ord;
 	}
 	
+	/**
+	 * teste la presence de taches generiques ExcecuteCallTask
+	 * @param tasks	liste des taches a parcourrir
+	 * @return	true si au moins une taches ExcecuteCallTask est presente et false sinon
+	 */
 	protected boolean thereIsECT(List<Method> tasks) {
 		int cpt = 0;
 		for(Method m : tasks)
@@ -453,7 +491,7 @@ public abstract class AbstractComponentRT extends AbstractComponent
 	
 	
 	/**
-	 * crée la liste des ExecuteCallTasks
+	 * cree la liste des ExecuteCallTasks
 	 * @return liste des ExecuteCallTasks créés
 	 * @throws SecurityException 
 	 * @throws NoSuchMethodException 
@@ -464,18 +502,17 @@ public abstract class AbstractComponentRT extends AbstractComponent
 												long smallest_timeLimit,
 												long largest_startTime) throws NoSuchMethodException, SecurityException {
 		List<Method> offered = allOffredMethod();
-		
+
 		if (offered.size() == 0) {
 			return new ArrayList<Method>();
 		}
 
 		Map<String , AccessType> variables = new HashMap<String, AccessType>();
-		
 	
 		String [] vars;
 		AccessType [] types;
 		for (Method mI : offered) {
-			Class [] params = {java.lang.Object[].class, java.util.concurrent.CompletableFuture.class};
+			Class [] params = {java.lang.Object[].class, CompletableFuture.class};
 			Method m = this.getClass().getMethod(mI.getName(),params);
 			vars = ((AccessedVars) m.getAnnotation(AccessedVars.class)).vars();
 			types = ((AccessedVars) m.getAnnotation(AccessedVars.class)).accessType();
@@ -489,7 +526,7 @@ public abstract class AbstractComponentRT extends AbstractComponent
 			
 			}
 		}
-		
+
 		String [] vars_accessed = new String[variables.size()];
 		AccessType [] typeAccess = new AccessType[variables.size()];
 		int j = 0;
@@ -497,7 +534,7 @@ public abstract class AbstractComponentRT extends AbstractComponent
 			vars_accessed[j] = e.getKey();
 			typeAccess[j++] = e.getValue();
 		}
-		
+
 		List<Method> ect_list = new ArrayList<>();
 		int nb_ect = 0;
 		if(largest_wcet!=0)
@@ -506,16 +543,18 @@ public abstract class AbstractComponentRT extends AbstractComponent
 		try {
 			for( int i = 0 ; i < nb_ect ; i ++) {
 				Method m = AbstractComponentRT.class.getMethod("executeCallTask");
+
 				alterAnnotationValue(m , vars_accessed , typeAccess,
 										smallest_timeLimit, largest_startTime, largest_wcet  );
 
+				
 				ect_list.add(m);
 			}
 		}catch( Exception e ) {
 			e.printStackTrace();
 			return null;
 		}
-		
+
 		return ect_list;
 	}
 	
@@ -550,21 +589,18 @@ public abstract class AbstractComponentRT extends AbstractComponent
 										long wcet) 
 	{
 		try {
-
+			m.getAnnotation(TaskAnnotation.class);
 			
 			Object handler_TaskAnnotation = Proxy.getInvocationHandler(m.getAnnotation(TaskAnnotation.class));
             Field memberValue_field_TaskAnnotation = handler_TaskAnnotation.getClass().getDeclaredField("memberValues");
             memberValue_field_TaskAnnotation.setAccessible(true);
             Map <String , Object> memeberValues_map_TaskAnnotation = (Map<String , Object>) memberValue_field_TaskAnnotation.get(handler_TaskAnnotation);
 
-            
             memeberValues_map_TaskAnnotation.put("wcet", (long) wcet);
             memeberValues_map_TaskAnnotation.put("timeLimit", (long)timeLimit);
             memeberValues_map_TaskAnnotation.put("startTime", (long)startTime);
-            
-            
-            
 
+            
             Object handler_VarAnnotation = Proxy.getInvocationHandler(m.getAnnotation(AccessedVars.class));
             Field memberValue_field_VarAnnotation = handler_VarAnnotation.getClass().getDeclaredField("memberValues");
             memberValue_field_VarAnnotation.setAccessible(true);
@@ -572,14 +608,25 @@ public abstract class AbstractComponentRT extends AbstractComponent
             
             memeberValues_map_VarAnnotation.put("vars", vars);
             memeberValues_map_VarAnnotation.put("accessType", type);
+		
 		} catch (Exception  e) {
 			e.printStackTrace();
 		} 
 		
 	}
 	
+	/**
+	 * teste recurcivement tous les cas possibles d'ordonnoncement
+	 * @param l						liste des taches
+	 * @param ord					ordonnoncement actuel
+	 * @param cycle_of_component	duree du cycle
+	 * @param time_marker			temps ou la prochaine tache va etre ajoutee
+	 * @return						ordonnoncement possible sur un thread
+	 * @throws SchedulingException
+	 */
 	protected final Map<Method , Long> sched (List<Method> l, Map<Method ,Long> ord , long cycle_of_component , long time_marker) 
-			throws SchedulingException{
+	throws SchedulingException
+	{
 		if (l.size() == 0) {
 			return ord;
 		}
@@ -603,7 +650,6 @@ public abstract class AbstractComponentRT extends AbstractComponent
 	}
 	
 	
-	// il faut comparer chaque élèment avec tout ceux qui le suivent
 	protected static boolean  checkPossibility (Map<Method , Long> list , long cycle_of_component) {
 		MethodComparator tc = new MethodComparator();
 		for (Map.Entry<Method , Long> e1 : list.entrySet()) {
@@ -679,8 +725,6 @@ public abstract class AbstractComponentRT extends AbstractComponent
 			}
 		}
 		
-		
-		//add all remaining task in the last list
 		for (Method task : list)
 		{
 			lists.get(lists.size()-1).add(task);
@@ -710,6 +754,7 @@ public abstract class AbstractComponentRT extends AbstractComponent
 		return false;
 	}
 	
+	
 	private Set<String> filtre_by_accessing_type (String [] vars , AccessType [] type) {
 		Set<String> s = new HashSet<>();
 		for (int i = 0 ; i < vars.length ; i ++) {
@@ -720,15 +765,26 @@ public abstract class AbstractComponentRT extends AbstractComponent
 		return s;
 	}
 	
+	/// Fin du scheduler ///
 	
+	
+	/**
+	 * lancement d'un cycle
+	 * @throws Exception
+	 */
 	public void cycle () throws Exception {
 		long cycle_time = ((CyclePeriod) this.getClass().getAnnotation(CyclePeriod.class)).period();
 
 		for (Map<Method , Long> i : this.tasks_list) {
+			
 			for (Map.Entry<Method, Long> t : i.entrySet()) {
 			this.executors.get(this.tasks_list.indexOf(i)).scheduleAtFixedRate(()-> {
 				try {
-					t.getKey().invoke(this);
+					try {
+						t.getKey().invoke(this);
+					} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+						e.printStackTrace();
+					}
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -738,7 +794,9 @@ public abstract class AbstractComponentRT extends AbstractComponent
 		}
 	}
 	
-	
+	/**
+	 * receptionne un appel entrant en bloquant l'appellant sur le InBoundPort
+	 */
 	@Override 
 	public <T> T handleRequestSync(ComponentService<T> task) throws Exception { 
 		T cf = task.call(); 
@@ -747,12 +805,19 @@ public abstract class AbstractComponentRT extends AbstractComponent
 		return cf; 
 	}
 
+	/**
+	 * receptionne un appel entrant sans bloquer l'appellant
+	 */
 	@Override 
 	public <T> void handleRequestAsync(ComponentService<T> task) throws Exception { 
 		T cf = task.call(); 
 		assert cf instanceof CompletableFuture; 
 	}
 	
+	/**
+	 * execute les appels entrants
+	 * @throws Exception
+	 */
 	@AccessedVars(accessType = {  }, vars = {  })
 	@TaskAnnotation(timeLimit = 0, wcet = 0 , startTime = 0)
 	public void executeCallTask () throws Exception {
